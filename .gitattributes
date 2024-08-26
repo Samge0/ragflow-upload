@@ -1,0 +1,17 @@
+# git忽略windows跟linux不同系统下的换行符（20240223）
+
+# 忽略文件权限：
+# git config --global core.fileMode false
+
+# 忽略换行符（这会让git在检出文件时自动转换换行符为LF，而在提交时保留LF，帮助保持文件的一致性。）：
+# 创建.gitattributes文件，添加：
+# * text=auto eol=lf
+
+# 或者用命令行：
+# git config --global core.autocrlf true
+
+# 修改后，如果git没有立即刷新生效，需要先清理git缓存，重新add
+# git rm -r --cached .
+# git add .
+
+* text=auto eol=lf
