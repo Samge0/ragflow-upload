@@ -146,4 +146,4 @@ test*.py
 .cache/
 .vscode/
 node_modules/
-config.py
+configs.py

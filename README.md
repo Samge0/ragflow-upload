@@ -13,9 +13,9 @@ conda create -n ragflow-upload python=3.10.13 -y
 pip install -r requirements.txt
 ```
 
-## 复制并配置[ragflows/config.json](ragflows/config.json)
+## 复制并配置[ragflows/configs.py](ragflows/configs.py)
 ```shell
-cp ragflows/config-dev.json ragflows/config.json
+cp ragflows/configs.demo.py ragflows/configs.py
 ```
 
 ### 上传文档

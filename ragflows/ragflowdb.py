@@ -4,7 +4,7 @@
 # date：2024-08-26 10:11
 # describe：
 
-from ragflows import config
+from ragflows import configs
 from utils.mysqlutils import BaseMySql
 from utils import timeutils
 
@@ -15,11 +15,11 @@ def get_db():
     global rag_db
     if not rag_db:
         rag_db = BaseMySql(
-            host=config.MYSQL_HOST,
-            user=config.MYSQL_USER,
-            password=config.MYSQL_PASSWORD,
-            database=config.MYSQL_DATABASE,
-            port=config.MYSQL_PORT
+            host=configs.MYSQL_HOST,
+            user=configs.MYSQL_USER,
+            password=configs.MYSQL_PASSWORD,
+            database=configs.MYSQL_DATABASE,
+            port=configs.MYSQL_PORT
         )
     return rag_db
 
@@ -52,7 +52,7 @@ def exist_name(name):
 
 
 if __name__ == '__main__':
-    doc_list = get_doc_list(config.DIFY_DOC_KB_ID) or []
+    doc_list = get_doc_list(configs.DIFY_DOC_KB_ID) or []
     for item in doc_list:
         timeutils.print_log(item.get('id'), item.get('name'), item.get('progress'))
         

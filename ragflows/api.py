@@ -6,7 +6,7 @@
 
 import time
 import requests
-from ragflows import config, ragflowdb
+from ragflows import configs, ragflowdb
 from utils import fileutils, timeutils
 
 
@@ -23,7 +23,7 @@ def upload_file_to_kb(file_path, kb_name, kb_id, parser_id=None, run=None):
     Returns:
         dict: 上传结果
     """
-    url = f"{config.API_URL}/document/upload" 
+    url = f"{configs.API_URL}/document/upload" 
     files = {'file': open(file_path, 'rb')}
     data = {
         'kb_name': kb_name,
@@ -36,7 +36,7 @@ def upload_file_to_kb(file_path, kb_name, kb_id, parser_id=None, run=None):
     if run:
         data['run'] = run
         
-    response = requests.post(url, files=files, data=data, headers=config.get_header())
+    response = requests.post(url, files=files, data=data, headers=configs.get_header())
     
     if response.status_code == 200:
         return response.json()
@@ -57,8 +57,8 @@ def get_rag_list(kb_id):
     Returns:
         list: 文档列表
     """
-    url = f"{config.API_URL}/document/list?kb_id={kb_id}&page=1&page_size=1"  # 替换为实际的服务器地址
-    response = requests.get(url, headers=config.get_header())
+    url = f"{configs.API_URL}/document/list?kb_id={kb_id}&page=1&page_size=1"  # 替换为实际的服务器地址
+    response = requests.get(url, headers=configs.get_header())
     if response.status_code == 200:
         return response.json().get('data').get('docs')
     else:
@@ -75,9 +75,9 @@ def parse_chunks(doc_ids, run=1):
     Returns:
         dict: 解析文档后的结果
     """
-    url = f"{config.API_URL}/document/run"  # 替换为实际的服务器地址
+    url = f"{configs.API_URL}/document/run"  # 替换为实际的服务器地址
     data = {"doc_ids":doc_ids,"run":run}
-    response = requests.post(url, json=data, headers=config.get_header())
+    response = requests.post(url, json=data, headers=configs.get_header())
     timeutils.print_log(response.text)
     if response.status_code == 200:
         return response.json()
