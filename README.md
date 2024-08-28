@@ -3,6 +3,8 @@
 
 为了简化这一过程，我编写了一个脚本，该脚本可以遍历指定目录，自动逐个将文档上传至 RagFlow 知识库，并立即启动解析。当一个文档解析完成后，脚本将自动上传并解析下一个文档。特别是在需要上传大量文件时，这显著减少了人工干预，避免了手动分批上传和解析的等待时间。
 
+（例如，我自己需要将mac中所有备忘录内容导入到知识库中查询）
+
 ### 创建env环境
 ```shell
 conda create -n ragflow-upload python=3.10.13 -y
@@ -22,3 +24,7 @@ cp ragflows/configs.demo.py ragflows/configs.py
 ```shell
 python ragflows/main.py
 ```
+
+### 相关截图
+![image](https://github.com/user-attachments/assets/13c93d4a-66fd-4083-ab2c-75c93ef94ab0)
+![image](https://github.com/user-attachments/assets/aad9dfb0-3231-4b33-8768-08a2d99cf47e)
