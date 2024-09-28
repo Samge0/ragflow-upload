@@ -16,6 +16,7 @@ pip install -r requirements.txt
 ```
 
 ## 复制并配置[ragflows/configs.py](ragflows/configs.py)
+关于配置文件的说明可参考这个：[issues #2](https://github.com/Samge0/ragflow-upload/issues/2)
 ```shell
 cp ragflows/configs.demo.py ragflows/configs.py
 ```
