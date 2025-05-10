@@ -26,6 +26,35 @@ cp ragflows/configs.demo.py ragflows/configs.py
 python ragflows/main.py
 ```
 
+### 常见问题
+<details> <summary> 执行脚本提示: ModuleNotFoundError: No module named 'ragflows' </summary>
+
+> 一般在`vscode`/`pycharm`或者其他IDE中执行时不会遇到这个问题，但如果直接在终端窗口中执行时可能会遇到。
+
+解决方法：
+
+在执行脚本前，配置临时环境变量`PYTHONPATH`指向当前项目目录（`.`表示当前所在目录）。
+- Linux/macOS系统：
+    ```bash
+    export PYTHONPATH=.
+    python ragflows/main.py
+    ```
+
+- Windows系统 (CMD)：
+    ```shell
+    set PYTHONPATH=.
+    python ragflows/main.py
+    ```
+
+- Windows系统 (PowerShell)：
+    ```shell
+    $env:PYTHONPATH = "."
+    python ragflows/main.py
+    ```
+
+
+</details>
+
 ### 相关截图
 ![image](https://github.com/user-attachments/assets/13c93d4a-66fd-4083-ab2c-75c93ef94ab0)
 ![image](https://github.com/user-attachments/assets/aad9dfb0-3231-4b33-8768-08a2d99cf47e)
