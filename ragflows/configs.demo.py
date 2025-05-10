@@ -22,6 +22,9 @@ MYSQL_DATABASE = 'rag_flow'
 # 文档最少行数，低于该值的文档则被忽略，该参数仅作用于 txt,md,html 后缀文件
 DOC_MIN_LINES = 1
 
+# 是否仅上传文件。True=仅上传文件， False=上传文件+自动解析
+ONLY_UPLOAD = False
+
 
 def get_header():
     return {'authorization': AUTHORIZATION}

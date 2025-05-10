@@ -95,8 +95,10 @@ if __name__ == '__main__':
         # 如果文件已存在，则判断是否已经对文件进行了切片解析
         if ragflowdb.exist_name(filename):
             doc_item = ragflowdb.get_doc_item_by_name(filename)
-            if doc_item.get('progress') == 1:
-                timeutils.print_log(f"{file_path} 已上传，跳过")
+            if configs.ONLY_UPLOAD:
+                timeutils.print_log(f"{file_path} 已存在，跳过")
+            elif doc_item.get('progress') == 1:
+                timeutils.print_log(f"{file_path} 已完成切片，跳过")
             else:
                 status = api.parse_chunks_with_check(filename)
                 timeutils.print_log(f"{file_path} 切片状态：", status)
@@ -115,6 +117,11 @@ if __name__ == '__main__':
             timeutils.print_log(f'{file_path} 上传失败：{response.get("text")}')
             continue
         
+        # 仅上传，跳过切片解析
+        if configs.ONLY_UPLOAD:
+            continue
+        
+        # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
         status = api.parse_chunks_with_check(filename)
         timeutils.print_log(file_path, "切片状态：", status)
