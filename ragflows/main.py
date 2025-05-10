@@ -98,7 +98,7 @@ if __name__ == '__main__':
             if doc_item.get('progress') == 1:
                 timeutils.print_log(f"{file_path} 已上传，跳过")
             else:
-                status = api.parse_chunks_with_check(doc_item)
+                status = api.parse_chunks_with_check(filename)
                 timeutils.print_log(f"{file_path} 切片状态：", status)
             continue
         
