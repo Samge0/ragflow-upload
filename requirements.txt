@@ -1,3 +1,5 @@
 requests
 pytz
 pymysql
+customtkinter
+pyinstaller

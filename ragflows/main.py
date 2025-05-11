@@ -1,5 +1,3 @@
-
-        
 import glob
 import os
 from ragflows import api, configs, ragflowdb
@@ -67,8 +65,8 @@ def get_file_lines(file_path) -> int:
         return 0
 
 
-if __name__ == '__main__':
-    
+def main():
+    """主函数，处理文档上传和解析"""
     # 使用 glob 模块获取所有 .md 文件
     doc_files = get_docs_files() or []
 
@@ -127,3 +125,7 @@ if __name__ == '__main__':
         timeutils.print_log(file_path, "切片状态：", status)
     
     timeutils.print_log('all done')
+
+
+if __name__ == '__main__':
+    main()
