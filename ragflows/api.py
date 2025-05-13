@@ -17,13 +17,17 @@ def check_api_url() -> tuple[bool, str]:
         样式1-成功：{"code":0,"data":"v0.17.2 full","message":"success"}
         样式2-认证失败/未授权：{"code":401,"data":null,"message":"<Unauthorized '401: Unauthorized'>"}
         样式3-API地址配置错误：{"code":100,"data":null,"message":"<NotFound '404: Not Found'>"}
+        样式4-不存在的API地址
 
     Returns:
         bool: 是否可以访问
         str: 提示文本
     """
     url = f"{configs.API_URL}/system/version"
-    r = requests.get(url, headers=configs.get_header(), timeout=20)
+    try:
+        r = requests.get(url, timeout=20)
+    except Exception as e:
+        return False, f"请求失败，请检查API相关配置后重试，请求异常：{e}"
     
     if r.status_code != 200:
         return False, f"请求失败，请检查API相关配置后重试，请求状态码：{r.status_code}"
@@ -36,9 +40,9 @@ def check_api_url() -> tuple[bool, str]:
     message = response.get("message")
     
     if code == 401 or code == 403:
-        return False, "认证失败/未授权，请检查 AUTHORIZATION 配置"
+        return False, "认证失败/未授权，请检查 AUTHORIZATION 配置（授权Token）"
     elif code == 100 or '404' in message:
-        return False, "API地址配置错误，请检查 API_URL 配置"
+        return False, "API地址配置错误，请检查 API_URL 配置（API地址）"
     else:
         return False, "请求失败，请检查API相关配置后重试"
 
