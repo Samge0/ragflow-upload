@@ -5,10 +5,16 @@
 
 （例如，我自己需要将mac中所有备忘录内容导入到知识库中查询）
 
-### 创建env环境
+### 使用[miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install#power-shell)创建env环境
 ```shell
 conda create -n ragflow-upload python=3.10.13 -y
 ```
+
+### 激活环境
+```shell
+conda activate ragflow-upload
+```
+
 
 ### 安装依赖
 ```shell

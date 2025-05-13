@@ -25,7 +25,7 @@ def check_api_url() -> tuple[bool, str]:
     """
     url = f"{configs.API_URL}/system/version"
     try:
-        r = requests.get(url, timeout=20)
+        r = requests.get(url, headers=configs.get_header())
     except Exception as e:
         return False, f"请求失败，请检查API相关配置后重试，请求异常：{e}"
     
