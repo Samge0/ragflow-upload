@@ -62,6 +62,13 @@ def build():
         "--hidden-import", "logging",
         "--hidden-import", "importlib",
         "--hidden-import", "importlib.util",
+        # 添加 PIL 相关依赖 - 兼容unbuntu的打包跟运行
+        "--hidden-import", "PIL",
+        "--hidden-import", "PIL._tkinter_finder",
+        "--hidden-import", "PIL.Image",
+        "--hidden-import", "PIL.ImageTk",
+        "--hidden-import", "PIL.ImageDraw",
+        "--hidden-import", "PIL.ImageFont",
         # 输出的文件名
         "--name", OUTPUT_NAME,
     ]
