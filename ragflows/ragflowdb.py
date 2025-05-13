@@ -11,6 +11,16 @@ from utils import timeutils
 
 rag_db = None
 
+def reset_connection():
+    """重置数据库连接"""
+    global rag_db
+    if rag_db:
+        try:
+            rag_db.close_connect()
+        except:
+            pass
+    rag_db = None
+
 def get_db():
     global rag_db
     if not rag_db:

@@ -67,6 +67,17 @@ def get_file_lines(file_path) -> int:
 
 def main():
     """主函数，处理文档上传和解析"""
+    
+    # 运行前测试数据库连接
+    db = ragflowdb.get_db()
+    if not db or not db.conn:
+        raise Exception("无法连接到数据库，请检查数据库配置是否正确")
+    
+    # 运行前测试API连接
+    status, msg = api.check_api_url()
+    if not status:
+        raise Exception(msg)
+    
     # 使用 glob 模块获取所有 .md 文件
     doc_files = get_docs_files() or []
 
