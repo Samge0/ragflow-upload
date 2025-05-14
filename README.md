@@ -5,6 +5,15 @@
 
 （例如，我自己需要将mac中所有备忘录内容导入到知识库中查询）
 
+### 独立客户端
+可以在[releases](https://github.com/Samge0/ragflow-upload/releases/tag/v1.0.0)这里下载编译好的安装包，打开客户端后根据[issues#2](https://github.com/Samge0/ragflow-upload/issues/2)填写相关配置即可。
+
+如果想要自己构建`windows / MAC / linux`系统下的可执行程序，可参考[scripts/README.md](scripts/README.md)中的说明进行构建。
+
+![image](https://github.com/user-attachments/assets/4f657a35-6d4a-4e08-b507-a8c885f37134)
+
+如果需要以源码方式运行，可参考下面几个步骤：
+
 ### 使用[miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install#power-shell)创建env环境
 ```shell
 conda create -n ragflow-upload python=3.10.13 -y
@@ -14,7 +23,6 @@ conda create -n ragflow-upload python=3.10.13 -y
 ```shell
 conda activate ragflow-upload
 ```
-
 
 ### 安装依赖
 ```shell
@@ -57,8 +65,6 @@ python ragflows/main.py
     $env:PYTHONPATH = "."
     python ragflows/main.py
     ```
-
-
 </details>
 
 ### 相关截图
