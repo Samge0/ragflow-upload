@@ -14,7 +14,7 @@ def _clean_file(_path: str, is_dir=False):
 
 def build():
     """执行打包流程"""
-    print("开始打包...")
+    print("Starting build process...")
     
     # 清理旧的构建文件
     _clean_file("build", True)
@@ -30,7 +30,7 @@ def build():
     path_separator = ";" if platform.system().lower() == "windows" else ":"
     
     # 图标路径
-    icon_path = "scripts/icon.ico"
+    icon_path = "scripts/icon.png"
     
     # 复制并重命名配置文件
     example_config_path = "ragflows/configs.demo.py"
@@ -42,8 +42,8 @@ def build():
     pyinstaller_cmd = [
         "pyinstaller",
         "--noconfirm",
-        "--onefile",
         "--windowed",
+        "--onefile",
         # 直接添加需要的文件和目录
         "--add-data", f"ragflows{path_separator}ragflows",
         "--add-data", f"utils{path_separator}utils",
@@ -62,16 +62,41 @@ def build():
         "--hidden-import", "logging",
         "--hidden-import", "importlib",
         "--hidden-import", "importlib.util",
-        # 添加 PIL 相关依赖 - 兼容unbuntu的打包跟运行
+        # 添加 PIL 相关依赖
         "--hidden-import", "PIL",
         "--hidden-import", "PIL._tkinter_finder",
         "--hidden-import", "PIL.Image",
         "--hidden-import", "PIL.ImageTk",
         "--hidden-import", "PIL.ImageDraw",
         "--hidden-import", "PIL.ImageFont",
-        # 输出的文件名
-        "--name", OUTPUT_NAME,
     ]
+    
+    # 平台特定配置
+    if platform.system().lower() == "darwin":
+        # 获取目标架构
+        target_arch = os.environ.get("TARGET_ARCH", "x86_64")
+        print(f"Building for macOS {target_arch}")
+        
+        pyinstaller_cmd.extend([
+            "--name", OUTPUT_NAME,
+            "--osx-bundle-identifier", "com.ragflow.upload",
+            "--codesign-identity", "-",  # 禁用代码签名
+            "--target-arch", target_arch,  # 使用环境变量指定的架构
+        ])
+    elif platform.system().lower() == "windows":
+        # 获取目标架构
+        target_arch = os.environ.get("TARGET_ARCH", "x64")
+        print(f"Building for Windows {target_arch}")
+        
+        pyinstaller_cmd.extend([
+            "--name", OUTPUT_NAME,
+            "--target-arch", target_arch  # 使用环境变量指定的架构
+        ])
+        
+    else:
+        pyinstaller_cmd.extend([
+            "--name", OUTPUT_NAME,
+        ])
     
     # 添加图标（如果存在）
     if os.path.exists(icon_path):
@@ -88,8 +113,8 @@ def build():
     _clean_file(temp_config_path, False)
     _clean_file(f'{OUTPUT_NAME}.spec', False)
     
-    print("打包完成！")
-    print("可执行文件已保存在: ", os.path.abspath(f'dist'), "目录下")
+    print("Build completed!")
+    print("Executable file saved in: ", os.path.abspath('dist'))
 
 if __name__ == "__main__":
     build() 

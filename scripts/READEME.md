@@ -1,9 +1,9 @@
 ## Ragflow Upload打包脚本
 
 ### 功能说明
-该脚本用于将Ragflow Upload项目打包成可执行文件。打包过程会生成一个独立的exe文件，包含所有必要的依赖和资源文件。
+该脚本用于将`Ragflow Upload`项目打包成可执行文件。打包过程会生成一个独立的客户端程序文件，包含所有必要的依赖和资源文件。
 
-### 环境要求
+### 打包环境要求
 - python 3.10+
 - pyInstaller
 - customtkinter
@@ -32,12 +32,12 @@
    python scripts/build.py
    ```
 
-3. 打包完成后，可执行文件将位于`dist/RagFlowUpload.exe`，程序运行时将从用户目录下（`~/.ragflow_upload`）读取/保存配置
+3. 打包完成后，可执行文件将输出到`dist`目录，程序运行时将从用户目录（`~/.ragflow_upload`）下读取/保存配置
 
 ### 注意事项
 - 打包过程会自动处理配置文件，将`configs.demo.py`复制并重命名为`configs.py`
 - 打包后的程序包含完整的依赖，无需额外安装Python环境
-- 程序图标使用`scripts/icon.ico`
+- 程序图标使用`scripts/icon.png`
 - 打包过程会自动包含以下目录和文件：
   - ragflows目录
   - utils目录
@@ -57,3 +57,12 @@
    - 配置文件是否正确
    - 是否有必要的系统权限
    - 是否被杀毒软件拦截
+
+3. linux平台下运行前需要添加可执行权限
+   ```shell
+   sudo chmod +x RagFlowUpload-xxx
+   ```
+
+4. mac平台下运行前会可能提示`无法打开“RagFlowUpload”，因为它来自身份不明的开发者。`，可在`系统偏好设置-安全性与隐私-通用-允许`中选择`允许`，然后重新运行。
+
+5. 目前测试过正常运行的系统版本有：`windows10`、`mac14（intel）`、`ubuntu24.04`，其他版本的系统若发现存在兼容问题，请改为源码方式运行。

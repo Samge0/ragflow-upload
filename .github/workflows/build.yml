@@ -4,44 +4,293 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        include:
-          - os: windows-latest
-            artifact_name: ragflow-upload-windows.exe
-          - os: ubuntu-latest
-            artifact_name: ragflow-upload-linux
-          - os: macos-latest
-            artifact_name: ragflow-upload-macos
-
+  build-windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 30
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
+    - name: Debug Information
       run: |
-        python -m pip install --upgrade pip
+        echo "Running on Windows x64"
+        echo "Tag: ${{ github.ref }}"
+        echo "Event name: ${{ github.event_name }}"
+        
+    - uses: actions/checkout@v4
+    
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        architecture: 'x64'
+        miniconda-version: "latest"
+        python-version: "3.10"
+        activate-environment: "ragflow-upload"
+        
+    - name: Install dependencies with Conda
+      run: |
+        conda install -y -c conda-forge tk
+        conda install -y -c conda-forge pyinstaller
         pip install -r requirements.txt
+        pip install -r scripts/requirements.txt
         
     - name: Build with PyInstaller
       run: |
-        pyinstaller --onefile --windowed --add-data "configs.py;." main.py
+        $env:TARGET_ARCH="x64"
+        python scripts/build.py
         
-    - name: Upload artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: List build artifacts
+      run: |
+        dir dist
+        
+    - name: Rename Windows x64 binary
+      run: |
+        move dist\RagFlowUpload.exe dist\RagFlowUpload-windows-x64.exe
+        
+    - name: Upload Windows x64 artifact
+      uses: actions/upload-artifact@v4
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./dist/main
-        asset_name: ${{ matrix.artifact_name }}
-        asset_content_type: application/octet-stream 
+        name: windows-x64-artifact
+        path: dist/RagFlowUpload-windows-x64.exe
+
+  build-windows-x86:
+    runs-on: windows-2019
+    timeout-minutes: 30
+    steps:
+    - name: Debug Information
+      run: |
+        echo "Running on Windows x86"
+        echo "Tag: ${{ github.ref }}"
+        echo "Event name: ${{ github.event_name }}"
+        echo "System architecture:"
+        systeminfo | findstr /B /C:"System Type"
+        
+    - uses: actions/checkout@v4
+    
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        architecture: 'x86'
+        miniconda-version: "latest"
+        python-version: "3.10"
+        activate-environment: "ragflow-upload"
+        
+    - name: Install dependencies with Conda
+      run: |
+        conda install -y -c conda-forge tk
+        conda install -y -c conda-forge pyinstaller
+        pip install -r requirements.txt
+        pip install -r scripts/requirements.txt
+        
+    - name: Build with PyInstaller
+      run: |
+        $env:TARGET_ARCH="x86"
+        python scripts/build.py
+        
+    - name: List build artifacts
+      run: |
+        echo "Listing dist directory contents:"
+        dir dist
+        
+    - name: Rename Windows x86 binary
+      run: |
+        move dist\RagFlowUpload.exe dist\RagFlowUpload-windows-x86.exe
+        
+    - name: Upload Windows x86 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-x86-artifact
+        path: dist/RagFlowUpload-windows-x86.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - name: Debug Information
+      run: |
+        echo "Running on Linux"
+        echo "Tag: ${{ github.ref }}"
+        echo "Event name: ${{ github.event_name }}"
+        echo "System architecture:"
+        uname -m
+        
+    - uses: actions/checkout@v4
+    
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        miniconda-version: "latest"
+        python-version: "3.10"
+        activate-environment: "ragflow-upload"
+        
+    - name: Install dependencies with Conda
+      run: |
+        conda install -y -c conda-forge tk
+        conda install -y -c conda-forge pyinstaller
+        pip install -r requirements.txt
+        pip install -r scripts/requirements.txt
+        
+    - name: Build with PyInstaller
+      run: |
+        # 获取系统架构
+        ARCH=$(uname -m)
+        echo "Building for Linux $ARCH"
+        export TARGET_ARCH="$ARCH"
+        python scripts/build.py
+        
+    - name: List build artifacts
+      run: |
+        echo "Listing dist directory contents:"
+        ls -la dist/
+        
+    - name: Rename Linux binary
+      run: |
+        ARCH=$(uname -m)
+        mv dist/RagFlowUpload "dist/RagFlowUpload-linux-$ARCH"
+        
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-artifact
+        path: dist/RagFlowUpload-linux-*
+
+  build-macos-x86_64:
+    # github action目前（20250514）最低的macos版本是13：https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+    - name: Debug Information
+      run: |
+        echo "Running on macOS x86_64"
+        echo "Tag: ${{ github.ref }}"
+        echo "Event name: ${{ github.event_name }}"
+        
+    - uses: actions/checkout@v4
+    
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        miniconda-version: "latest"
+        python-version: "3.10"
+        activate-environment: "ragflow-upload"
+        
+    - name: Install dependencies with Conda
+      run: |
+        conda install -y -c conda-forge tk
+        conda install -y -c conda-forge pyinstaller
+        pip install -r requirements.txt
+        pip install -r scripts/requirements.txt
+        
+    - name: Build with PyInstaller
+      run: |
+        export TARGET_ARCH="x86_64"
+        python scripts/build.py
+        
+    - name: List build artifacts
+      run: |
+        echo "Listing dist directory contents:"
+        ls -la dist/
+        
+    - name: Create DMG
+      run: |
+        # 创建临时目录
+        mkdir -p tmp_dmg
+        
+        # 复制应用程序到临时目录
+        cp -R "dist/RagFlowUpload.app" tmp_dmg/
+        
+        # 创建 DMG
+        hdiutil create -volname "RagFlowUpload-x86_64" -srcfolder tmp_dmg -ov -format UDZO dist/ragflow-upload-macos-x86_64.dmg
+        
+        # 清理临时目录
+        rm -rf tmp_dmg
+        
+    - name: Upload macOS x86_64 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-x86_64-artifact
+        path: dist/ragflow-upload-macos-x86_64.dmg
+
+  build-macos-arm64:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+    - name: Debug Information
+      run: |
+        echo "Running on macOS ARM64"
+        echo "Tag: ${{ github.ref }}"
+        echo "Event name: ${{ github.event_name }}"
+        
+    - uses: actions/checkout@v4
+    
+    - name: Set up Conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        miniconda-version: "latest"
+        python-version: "3.10"
+        activate-environment: "ragflow-upload"
+        
+    - name: Install dependencies with Conda
+      run: |
+        conda install -y -c conda-forge tk
+        conda install -y -c conda-forge pyinstaller
+        pip install -r requirements.txt
+        pip install -r scripts/requirements.txt
+        
+    - name: Build with PyInstaller
+      run: |
+        export TARGET_ARCH="arm64"
+        python scripts/build.py
+        
+    - name: List build artifacts
+      run: |
+        echo "Listing dist directory contents:"
+        ls -la dist/
+        
+    - name: Create DMG
+      run: |
+        # 创建临时目录
+        mkdir -p tmp_dmg
+        
+        # 复制应用程序到临时目录
+        cp -R "dist/RagFlowUpload.app" tmp_dmg/
+        
+        # 创建 DMG
+        hdiutil create -volname "RagFlowUpload-arm64" -srcfolder tmp_dmg -ov -format UDZO dist/ragflow-upload-macos-arm64.dmg
+        
+        # 清理临时目录
+        rm -rf tmp_dmg
+        
+    - name: Upload macOS ARM64 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-arm64-artifact
+        path: dist/ragflow-upload-macos-arm64.dmg
+
+  create-release:
+    needs: [build-windows-x64, build-windows-x86, build-linux, build-macos-x86_64, build-macos-arm64]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/windows-x64-artifact/RagFlowUpload-windows-x64.exe
+          artifacts/windows-x86-artifact/RagFlowUpload-windows-x86.exe
+          artifacts/linux-artifact/RagFlowUpload-linux-*
+          artifacts/macos-x86_64-artifact/ragflow-upload-macos-x86_64.dmg
+          artifacts/macos-arm64-artifact/ragflow-upload-macos-arm64.dmg
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
