@@ -48,9 +48,14 @@ def get_doc_item(doc_id):
     return results[0] if results else None
 
 @timeutils.monitor
-def get_doc_item_by_name(doc_id):
+def get_doc_item_by_name(name):
     db = get_db()
-    sql = f"select id,name,progress from document where name = '{doc_id}'"
+    kb_id = configs.DIFY_DOC_KB_ID
+    if kb_id:
+        # 这里同时查询kb_id和name，如果document表中的数据量很大，需要增加kb_id和name的组合索引：CREATE INDEX document_kb_id_name ON document(kb_id, name);
+        sql = f"select id,name,progress from document where kb_id = '{kb_id}' and name = '{name}'"
+    else:
+        sql = f"select id,name,progress from document where name = '{name}'"
     results = db.query_list(sql)
     return results[0] if results else None
 
