@@ -6,7 +6,7 @@
 （例如，我自己需要将mac中所有备忘录内容导入到知识库中查询）
 
 ### 独立客户端
-可以在[releases](https://github.com/Samge0/ragflow-upload/releases/tag/v1.0.0)这里下载编译好的安装包，打开客户端后根据[issues#2](https://github.com/Samge0/ragflow-upload/issues/2)填写相关配置即可。
+可以在[Releases](https://github.com/Samge0/ragflow-upload/releases)这里的`Assets`中下载编译好的最新版本客户端，打开客户端后根据[issues#2](https://github.com/Samge0/ragflow-upload/issues/2)填写相关配置即可。
 
 如果想要自己构建`windows / MAC / linux`系统下的可执行程序，可参考[scripts/README.md](scripts/README.md)中的说明进行构建。
 
