@@ -80,7 +80,7 @@ class ConfigGUI(ctk.CTk):
         self.geometry("800x600")
         
         # 版本和仓库信息
-        self.version = "v1.0.0"  # 版本号
+        self.version = "v1.0.1"  # 版本号
         self.github_repo = "https://github.com/Samge0/ragflow-upload"  # GitHub仓库地址
         
         # 自定义图标
