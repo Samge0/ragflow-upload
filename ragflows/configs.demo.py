@@ -25,6 +25,9 @@ DOC_MIN_LINES = 1
 # 是否仅上传文件。True=仅上传文件， False=上传文件+自动解析
 ONLY_UPLOAD = False
 
+# 进度查询间隔时间（秒）
+PROGRESS_CHECK_INTERVAL = 1
+
 
 def get_header():
     return {'authorization': AUTHORIZATION}
