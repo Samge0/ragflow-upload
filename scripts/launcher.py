@@ -98,7 +98,7 @@ class ConfigGUI(ctk.CTk):
             "PARSER_ID": {"type": str, "label": "解析方式", "default": "naive"},
             "DOC_DIR": {"type": str, "label": "文档目录", "default": "your doc dir"},
             "DOC_SUFFIX": {"type": str, "label": "文档后缀", "default": "md,txt,pdf,docx"},
-            "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "进度查询间隔(秒)", "default": "1"},
+            "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "切片进度查询间隔", "default": "1"},
             
             "MYSQL_HOST": {"type": str, "label": "MySQL主机", "default": "localhost"},
             "MYSQL_PORT": {"type": int, "label": "MySQL端口", "default": "5455"},
@@ -107,6 +107,7 @@ class ConfigGUI(ctk.CTk):
             "MYSQL_DATABASE": {"type": str, "label": "MySQL数据库", "default": "rag_flow"},
             "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "1"},
             "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
+            "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印切片进度日志", "default": "True"},
         }
         
         self.create_ui()
@@ -172,6 +173,17 @@ class ConfigGUI(ctk.CTk):
             text_color="white"  # 白色文字
         )
         self.run_button.pack(side="left", padx=5, pady=5)
+        
+        # 添加清理日志按钮
+        self.clear_log_button = ctk.CTkButton(
+            button_frame,
+            text="清理日志",
+            command=self.clear_log,
+            fg_color=["#757575", "#616161"],  # 灰色
+            hover_color=["#616161", "#424242"],  # 深灰色
+            text_color="white"  # 白色文字
+        )
+        self.clear_log_button.pack(side="left", padx=5, pady=5)
         
         # 日志区域
         log_frame = ctk.CTkFrame(self.main_frame)
@@ -466,6 +478,13 @@ class ConfigGUI(ctk.CTk):
             self.log("配置已保存")
         except Exception as e:
             self.log(f"保存配置失败: {str(e)}")
+
+    def clear_log(self):
+        """清理UI界面的日志显示"""
+        self.log_text.configure(state="normal")
+        self.log_text.delete(1.0, "end")
+        self.log_text.configure(state="disabled")
+        self.log("日志已清理")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")

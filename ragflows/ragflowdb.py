@@ -40,14 +40,14 @@ def get_doc_list(kb_id):
     doc_ids = db.query_list(sql)
     return doc_ids
 
-@timeutils.monitor
+# @timeutils.monitor
 def get_doc_item(doc_id):
     db = get_db()
     sql = f"select id,name,progress from document where id = '{doc_id}'"
     results = db.query_list(sql)
     return results[0] if results else None
 
-@timeutils.monitor
+# @timeutils.monitor
 def get_doc_item_by_name(name):
     db = get_db()
     kb_id = configs.DIFY_DOC_KB_ID
