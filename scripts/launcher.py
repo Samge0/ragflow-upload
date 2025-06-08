@@ -77,10 +77,10 @@ class ConfigGUI(ctk.CTk):
         self.log_handlers = []  # 添加日志处理器列表
         self.original_print_log = None  # 保存原始的日志打印函数
         self.title("RagFlow Upload")
-        self.geometry("800x600")
+        self.geometry("800x660")
         
         # 版本和仓库信息
-        self.version = "v1.0.1"  # 版本号
+        self.version = "v1.0.2"  # 版本号
         self.github_repo = "https://github.com/Samge0/ragflow-upload"  # GitHub仓库地址
         
         # 自定义图标
@@ -98,13 +98,15 @@ class ConfigGUI(ctk.CTk):
             "PARSER_ID": {"type": str, "label": "解析方式", "default": "naive"},
             "DOC_DIR": {"type": str, "label": "文档目录", "default": "your doc dir"},
             "DOC_SUFFIX": {"type": str, "label": "文档后缀", "default": "md,txt,pdf,docx"},
+            "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "进度查询间隔(秒)", "default": "1"},
+            
             "MYSQL_HOST": {"type": str, "label": "MySQL主机", "default": "localhost"},
             "MYSQL_PORT": {"type": int, "label": "MySQL端口", "default": "5455"},
             "MYSQL_USER": {"type": str, "label": "MySQL用户名", "default": "root"},
             "MYSQL_PASSWORD": {"type": str, "label": "MySQL密码", "default": "infini_rag_flow"},
             "MYSQL_DATABASE": {"type": str, "label": "MySQL数据库", "default": "rag_flow"},
             "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "1"},
-            "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"}
+            "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
         }
         
         self.create_ui()

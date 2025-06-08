@@ -157,10 +157,11 @@ def parse_chunks_with_check(filename):
             fileutils.save(f"{fileutils.get_cache_dir()}/ragflow_fail.txt", f"{timeutils.get_now_str()} {msg}\n")
             return False
         
-        timeutils.print_log(f"[{filename}]解析进度为：{progress}")
+        progress_percent = round(progress * 100, 2)
+        timeutils.print_log(f"[{filename}]解析进度为：{progress_percent}%")
         if progress == 1:
             return True
-        time.sleep(1)
+        time.sleep(configs.PROGRESS_CHECK_INTERVAL)
     
     
 # 是否请求成功
