@@ -25,7 +25,10 @@ DOC_MIN_LINES = 1
 # 是否仅上传文件。True=仅上传文件， False=上传文件+自动解析
 ONLY_UPLOAD = False
 
-# 进度查询间隔时间（秒）
+# 是否打印切片进度查询日志。True=打印，False=不打印
+ENABLE_PROGRESS_LOG = True
+
+# 切片进度查询间隔时间（秒）
 PROGRESS_CHECK_INTERVAL = 1
 
 

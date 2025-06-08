@@ -114,7 +114,7 @@ def parse_chunks(doc_ids, run=1):
     url = f"{configs.API_URL}/document/run"  # 替换为实际的服务器地址
     data = {"doc_ids":doc_ids,"run":run}
     response = requests.post(url, json=data, headers=configs.get_header())
-    timeutils.print_log(response.text)
+    timeutils.print_log("parse_chunks response:", response.text)
     if response.status_code == 200:
         return response.json()
     else:
@@ -157,10 +157,13 @@ def parse_chunks_with_check(filename):
             fileutils.save(f"{fileutils.get_cache_dir()}/ragflow_fail.txt", f"{timeutils.get_now_str()} {msg}\n")
             return False
         
-        progress_percent = round(progress * 100, 2)
-        timeutils.print_log(f"[{filename}]解析进度为：{progress_percent}%")
+        if configs.ENABLE_PROGRESS_LOG:
+            progress_percent = round(progress * 100, 2)
+            timeutils.print_log(f"[{filename}]解析进度为：{progress_percent}%")
+            
         if progress == 1:
             return True
+        
         time.sleep(configs.PROGRESS_CHECK_INTERVAL)
     
     

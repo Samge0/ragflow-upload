@@ -105,12 +105,13 @@ def main():
         if ragflowdb.exist_name(filename):
             doc_item = ragflowdb.get_doc_item_by_name(filename)
             if configs.ONLY_UPLOAD:
-                timeutils.print_log(f"{file_path} 已存在，跳过")
+                timeutils.print_log(f"{file_path} 已存在，跳过\n")
             elif doc_item.get('progress') == 1:
-                timeutils.print_log(f"{file_path} 已完成切片，跳过")
+                timeutils.print_log(f"{file_path} 已完成切片，跳过\n")
             else:
+                timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
                 status = api.parse_chunks_with_check(filename)
-                timeutils.print_log(f"{file_path} 切片状态：", status)
+                timeutils.print_log(f"{file_path} 切片状态：", status, "\n")
             continue
         
         # 文件不存在，上传文件=>切片=>解析并等待解析完毕
@@ -121,7 +122,7 @@ def main():
             parser_id=configs.PARSER_ID, 
             run="1"
         )
-        timeutils.print_log(response)
+        timeutils.print_log("upload_file_to_kb response:", response)
         if api.is_succeed(response) is False:
             timeutils.print_log(f'{file_path} 上传失败：{response.get("text")}')
             continue
@@ -133,7 +134,7 @@ def main():
         # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
         status = api.parse_chunks_with_check(filename)
-        timeutils.print_log(file_path, "切片状态：", status)
+        timeutils.print_log(file_path, "切片状态：", status, "\n")
     
     timeutils.print_log('all done')
 
