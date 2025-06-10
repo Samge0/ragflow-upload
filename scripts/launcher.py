@@ -77,10 +77,10 @@ class ConfigGUI(ctk.CTk):
         self.log_handlers = []  # 添加日志处理器列表
         self.original_print_log = None  # 保存原始的日志打印函数
         self.title("RagFlow Upload")
-        self.geometry("800x660")
+        self.geometry("800x700")
         
         # 版本和仓库信息
-        self.version = "v1.0.2"  # 版本号
+        self.version = "v1.0.2-alpha"  # 版本号
         self.github_repo = "https://github.com/Samge0/ragflow-upload"  # GitHub仓库地址
         
         # 自定义图标
@@ -99,6 +99,7 @@ class ConfigGUI(ctk.CTk):
             "DOC_DIR": {"type": str, "label": "文档目录", "default": "your doc dir"},
             "DOC_SUFFIX": {"type": str, "label": "文档后缀", "default": "md,txt,pdf,docx"},
             "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "切片进度查询间隔", "default": "1"},
+            "SQL_RETRIES": {"type": int, "label": "SQL查询重试次数", "default": "1"},
             
             "MYSQL_HOST": {"type": str, "label": "MySQL主机", "default": "localhost"},
             "MYSQL_PORT": {"type": int, "label": "MySQL端口", "default": "5455"},

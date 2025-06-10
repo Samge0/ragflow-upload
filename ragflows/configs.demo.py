@@ -31,6 +31,9 @@ ENABLE_PROGRESS_LOG = True
 # 切片进度查询间隔时间（秒）
 PROGRESS_CHECK_INTERVAL = 1
 
+# 查数据库重试次数（单次重试间隔为1秒）
+SQL_RETRIES = 1
+
 
 def get_header():
     return {'authorization': AUTHORIZATION}

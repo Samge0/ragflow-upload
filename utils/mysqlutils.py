@@ -6,6 +6,8 @@ from abc import abstractmethod
 import pymysql
 import logging
 
+from utils import timeutils
+
 class BaseMySql(object):
 
     conn = None
@@ -34,7 +36,7 @@ class BaseMySql(object):
             self.conn.commit()
 
         except Exception as e:
-            self.e(e)
+            timeutils.print_log(f'连接数据库异常: {e}')
             pass
 
     def query_list(self, sql: str) -> list:
@@ -51,7 +53,7 @@ class BaseMySql(object):
             columns = [col[0] for col in cur.description]
             return [dict(zip(columns, self.parse_encoding(row))) for row in cur.fetchall()]
         except Exception as e:
-            self.e(e)
+            timeutils.print_log(f'query_list 查询数据异常: {e}')
             return []
 
     def execute(self, sql: str) -> bool:
@@ -67,7 +69,7 @@ class BaseMySql(object):
             self.conn.commit()
             return True
         except Exception as e:
-            self.e(e)
+            timeutils.print_log(f'execute 执行sql异常，sql = {sql}\n error: {e}')
             return False
 
     def parse_encoding(self, row) -> list:
@@ -89,43 +91,15 @@ class BaseMySql(object):
             self.cursor.close()
             self.conn.close()
             self.child_close()
-            self.i('释放数据库连接')
+            timeutils.print_log(f'close_connect 已关闭数据库连接')
         except Exception as e:
-            self.e(e)
+            timeutils.print_log(f'close_connect 关闭数据库异常: {e}')
 
     def child_close(self) -> None:
         """
         提供给子类处理的关闭操作
         """
         pass
-
-    def _need_update(self, spider) -> bool:
-        """
-        判断该爬虫是否需要进行更新操作
-        :param spider:
-        :return:
-        """
-        try:
-            if not spider or not hasattr(spider, 'NEED_UPDATE'):
-                return False
-            self.i(f"是否需要进行更新 spider.NEED_UPDATE={spider.NEED_UPDATE}")
-            return spider.NEED_UPDATE
-        except:
-            return False
-
-    def _get_update_field_list(self, spider) -> list:
-        """
-        获取需要指定更新的字段
-        :param spider:
-        :return:
-        """
-        try:
-            if not spider or not hasattr(spider, 'UPDATE_FIELD_LIST'):
-                return []
-            self.i(f"指定更新字段 spider.UPDATE_FIELD_LIST={spider.UPDATE_FIELD_LIST}")
-            return spider.UPDATE_FIELD_LIST
-        except:
-            return []
         
     def i(self, msg):
         self.logger.info(msg)
