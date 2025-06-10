@@ -48,27 +48,36 @@ def get_doc_item(doc_id):
     results = db.query_list(sql)
     return results[0] if results else None
 
-def get_doc_item_by_name(name, max_retries=configs.SQL_RETRIES, retry_interval=1):
+def get_doc_item_by_name(name, max_retries=0, retry_interval=1):
     """
     根据文档名称获取文档信息，支持重试机制
     :param name: 文档名称
-    :param max_retries: 最大重试次数
+    :param max_retries: 最大重试次数，0表示不重试
     :param retry_interval: 重试间隔（秒）
     :return: 文档信息或None
     """
-    for attempt in range(max_retries):
-        db = get_db()
-        kb_id = configs.DIFY_DOC_KB_ID
-        if kb_id:
-            sql = f"select id,name,progress from document where kb_id = '{kb_id}' and name = '{name}'"
-        else:
-            sql = f"select id,name,progress from document where name = '{name}'"
+    db = get_db()
+    kb_id = configs.DIFY_DOC_KB_ID
+    if kb_id:
+        sql = f"select id,name,progress from document where kb_id = '{kb_id}' and name = '{name}'"
+    else:
+        sql = f"select id,name,progress from document where name = '{name}'"
+    
+    results = db.query_list(sql)
+    
+    # 如果max_retries为<=0，直接返回查询结果
+    if results or max_retries <= 0:
+        return results[0] if results else None
+        
+    # 否则执行重试逻辑
+    for attempt in range(1, max_retries + 1):
+        timeutils.print_log(f"查询 {name} 无结果，第{attempt}次重试...")
+        time.sleep(retry_interval)
+        
         results = db.query_list(sql)
         if results:
             return results[0]
-        if attempt < max_retries - 1:  # 如果不是最后一次尝试
-            timeutils.print_log(f"查询 {name} 无结果，第{attempt + 1}次重试...")
-            time.sleep(retry_interval)
+            
     return None
 
 def exist(doc_id):
