@@ -78,15 +78,25 @@ def main():
     if not status:
         raise Exception(msg)
     
-    # 使用 glob 模块获取所有 .md 文件
+    # 获取起始文件序号，从1开始计数，更符合非编程用户习惯
+    start_index = configs.START_INDEX if configs.START_INDEX >= 1 else 1
+    
+    # 使用 glob 模块获取所有文件
     doc_files = get_docs_files() or []
-
+    
     file_total = len(doc_files)
     if file_total == 0:
         raise ValueError(f"在 {configs.DOC_DIR} 目录下没有找到符合要求文档文件") 
     
+    # 检查start_index是否超过文件总数
+    if start_index >= file_total:
+        raise ValueError(f"起始文件序号 {start_index} >= 文件总数 {file_total}，请将【起始文件序号】参数重置为1，或者手动输入合适的序号，重新运行程序")
+    
     # 打印找到的所有 .md 文件
     for i in range(file_total):
+        
+        if i < start_index - 1:
+            continue
         
         file_path = doc_files[i]
         file_path = file_path.replace(os.sep, '/')

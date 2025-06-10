@@ -74,6 +74,7 @@ class ConfigGUI(ctk.CTk):
         self.current_thread = None  # 添加线程跟踪变量
         self.is_running = False  # 添加运行状态标志
         self.should_stop = False  # 添加停止标志
+        self.is_stopping = False  # 添加正在停止标志
         self.log_handlers = []  # 添加日志处理器列表
         self.original_print_log = None  # 保存原始的日志打印函数
         self.title("RagFlow Upload")
@@ -109,6 +110,7 @@ class ConfigGUI(ctk.CTk):
             "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "1"},
             "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
             "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印切片进度日志", "default": "True"},
+            "START_INDEX": {"type": int, "label": "起始文件序号", "default": "1"},  # 从1开始计数，更符合非编程用户习惯
         }
         
         self.create_ui()
@@ -232,9 +234,14 @@ class ConfigGUI(ctk.CTk):
             if self.current_thread and self.current_thread.is_alive():
                 self.log("上一个任务还在运行中，请等待完成或点击停止")
                 return
+        
+            # 运行前时将滚动条设置到底部
+            self.log_text.see("end")
+            
             self.start_run()
         else:
-            self.stop_run()
+            if not self.is_stopping:  # 防止重复点击
+                self.stop_run()
 
     def start_run(self):
         """开始运行"""
@@ -251,9 +258,13 @@ class ConfigGUI(ctk.CTk):
     def stop_run(self):
         """停止运行"""
         if self.current_thread and self.current_thread.is_alive():
+            self.is_stopping = True  # 设置正在停止标志
             self.is_running = False
             self.should_stop = True  # 设置停止标志
             self.log("正在停止运行...")
+            
+            # 禁用停止按钮，防止重复点击
+            self.run_button.configure(state="disabled")
             
             # 尝试终止线程
             try:
@@ -264,19 +275,28 @@ class ConfigGUI(ctk.CTk):
                     ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), exc)
             except Exception as e:
                 self.log(f"停止线程时出错: {str(e)}")
-            finally:
-                # 无论是否成功停止线程，都更新UI状态
+            
+            # 等待线程真正结束
+            def wait_thread_end():
+                if self.current_thread:
+                    self.current_thread.join()
+                # 线程结束后更新UI状态
                 self.current_thread = None
+                self.is_stopping = False
                 self.run_button.configure(
                     text="运行",
                     fg_color=["#3B8ED0", "#1F6AA5"],  # 默认蓝色
                     hover_color=["#36719F", "#144870"],  # 深蓝色
-                    text_color="white"  # 白色文字
+                    text_color="white",  # 白色文字
+                    state="normal"  # 恢复按钮状态
                 )
                 self.set_config_entries_state("normal")
                 self.log("已停止运行")
                 # 清理日志处理器
                 self.cleanup_log_handlers()
+            
+            # 在新线程中等待原线程结束
+            threading.Thread(target=wait_thread_end, daemon=True).start()
 
     def set_config_entries_state(self, state):
         """设置配置项的启用/禁用状态"""
@@ -362,7 +382,7 @@ class ConfigGUI(ctk.CTk):
                         self.log("数据库连接已重置")
                     except Exception as e:
                         self.log(f"数据库连接失败: {str(e)}，请检查数据库配置后重试")
-                        self.stop_run()
+                        self.should_stop = True  # 设置停止标志
                         return  # 中断执行
                 
                 # 动态导入主程序
@@ -395,15 +415,29 @@ class ConfigGUI(ctk.CTk):
                 
                 if not self.should_stop:  # 只有在非停止状态下才显示完成消息
                     self.log("程序运行完成")
-                self.stop_run()
             except Exception as e:
                 self.log(f"运行失败: {str(e)}")
                 self.log("详细错误信息:")
                 self.log(traceback.format_exc())
-                self.stop_run()
             finally:
                 # 确保在任何情况下都清理日志处理器
                 self.cleanup_log_handlers()
+                # 确保在任何情况下都更新停止状态
+                if self.is_running:  # 如果还在运行状态，说明是异常导致的停止
+                    self.is_running = False
+                    self.should_stop = True
+                    # 更新UI状态
+                    self.current_thread = None
+                    self.is_stopping = False
+                    self.run_button.configure(
+                        text="运行",
+                        fg_color=["#3B8ED0", "#1F6AA5"],  # 默认蓝色
+                        hover_color=["#36719F", "#144870"],  # 深蓝色
+                        text_color="white",  # 白色文字
+                        state="normal"  # 恢复按钮状态
+                    )
+                    self.set_config_entries_state("normal")
+                    self.log("已停止运行")
         
         # 在新线程中运行上传任务
         self.current_thread = threading.Thread(target=run, daemon=True)
@@ -422,11 +456,23 @@ class ConfigGUI(ctk.CTk):
             subprocess.run(['open', config_dir])
         else:  # Linux
             subprocess.run(['xdg-open', config_dir])
+
+    def is_scrollbar_at_bottom(self):
+        """检查滚动条是否在底部"""
+        current_position = self.log_text.yview()[1]
+        # 添加一个小的容差值（0.9）来判断是否在底部
+        is_at_bottom = current_position >= 0.9
+        return is_at_bottom
+
     def log(self, message):
         # 输出到GUI
         self.log_text.configure(state="normal")
         self.log_text.insert("end", f"{get_now_str()} {message}\n")
-        self.log_text.see("end")
+        
+        # 只有当滚动条在底部时才自动滚动
+        if self.is_scrollbar_at_bottom():
+            self.log_text.see("end")
+            
         self.log_text.configure(state="disabled")
         # 保存到日志文件
         log_save_handler.log(message)

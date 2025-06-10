@@ -133,7 +133,7 @@ def parse_chunks_with_check(filename):
     Returns:
         bool: 是否已上传并解析完毕
     """
-    doc_item = ragflowdb.get_doc_item_by_name(filename)
+    doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES)
     if not doc_item:
         timeutils.print_log(f'找不到{filename}对应的数据库记录，跳过')
         return False
@@ -159,7 +159,7 @@ def parse_chunks_with_check(filename):
         
         if configs.ENABLE_PROGRESS_LOG:
             progress_percent = round(progress * 100, 2)
-            timeutils.print_log(f"[{filename}]解析进度为：{progress_percent}%")
+            timeutils.print_log(f"{filename}解析进度为：{progress_percent}%")
             
         if progress == 1:
             return True
