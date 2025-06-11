@@ -1,7 +1,8 @@
 import glob
 import os
 from ragflows import api, configs, ragflowdb
-from utils import timeutils
+from utils import fileutils, timeutils
+from pathlib import Path
 
 
 def get_docs_files() -> list:
@@ -64,7 +65,6 @@ def get_file_lines(file_path) -> int:
         timeutils.print_log(f"打开文件 {file_path} 时出错，错误信息：{e}")
         return 0
 
-
 def main():
     """主函数，处理文档上传和解析"""
     
@@ -79,7 +79,12 @@ def main():
         raise Exception(msg)
     
     # 获取起始文件序号，从1开始计数，更符合非编程用户习惯
-    start_index = configs.START_INDEX if configs.START_INDEX >= 1 else 1
+    user_config_dir = os.path.join(Path.home(), '.ragflow_upload')
+    os.makedirs(user_config_dir, exist_ok=True)
+    index_filepath = f"{user_config_dir}/index_{configs.DIFY_DOC_KB_ID}_{configs.KB_NAME}.txt".replace(os.sep, "/")
+    start_index = int(fileutils.read(index_filepath) or 1)
+    if start_index < 1:
+        raise ValueError(f"【起始文件序号】值不能小于1，请改为大于等于1的值，或者删除序号缓存文件：{index_filepath}")
     
     # 使用 glob 模块获取所有文件
     doc_files = get_docs_files() or []
@@ -89,8 +94,8 @@ def main():
         raise ValueError(f"在 {configs.DOC_DIR} 目录下没有找到符合要求文档文件") 
     
     # 检查start_index是否超过文件总数
-    if start_index >= file_total:
-        raise ValueError(f"起始文件序号 {start_index} >= 文件总数 {file_total}，请将【起始文件序号】参数重置为1，或者手动输入合适的序号，重新运行程序")
+    if start_index > file_total:
+        raise ValueError(f"起始文件序号 {start_index} > 文件总数 {file_total}，请修改为正确的序号值，或者删除序号缓存文件：{index_filepath}")
     
     # 打印找到的所有 .md 文件
     for i in range(file_total):
@@ -103,6 +108,9 @@ def main():
         filename = os.path.basename(file_path)
         
         timeutils.print_log(f"【{i+1}/{file_total}】正在处理：{file_path}")
+        
+        # 记录文件序号，从1开始计数
+        fileutils.save(index_filepath, str(i+1))
         
         # 判断文件行数是否小于 目标值
         if need_calculate_lines(file_path):
@@ -143,7 +151,8 @@ def main():
         
         # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
-        status = api.parse_chunks_with_check(filename)
+        doc_id = response.get('data')[0].get('id') if response.get('data') else None
+        status = api.parse_chunks_with_check(filename, doc_id)
         timeutils.print_log(file_path, "切片状态：", status, "\n")
     
     timeutils.print_log('all done')

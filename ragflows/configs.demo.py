@@ -34,9 +34,5 @@ PROGRESS_CHECK_INTERVAL = 1
 # 查数据库重试次数（单次重试间隔为1秒）
 SQL_RETRIES = 0
 
-# 起始文件序号，从1开始计数，更符合非编程用户习惯
-START_INDEX = 1
-
-
 def get_header():
     return {'authorization': AUTHORIZATION}

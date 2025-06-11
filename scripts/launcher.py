@@ -110,11 +110,12 @@ class ConfigGUI(ctk.CTk):
             "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "1"},
             "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
             "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印切片进度日志", "default": "True"},
-            "START_INDEX": {"type": int, "label": "起始文件序号", "default": "1"},  # 从1开始计数，更符合非编程用户习惯
+            "UI_START_INDEX": {"type": int, "label": "起始文件序号", "default": "1"},  # 从1开始计数，更符合非编程用户习惯
         }
         
         self.create_ui()
         self.load_config()
+        self.load_index_from_cache()  # 加载缓存中的序号
 
     def create_ui(self):
         # 主框架
@@ -245,6 +246,9 @@ class ConfigGUI(ctk.CTk):
 
     def start_run(self):
         """开始运行"""
+        # 保存当前序号到缓存
+        self.save_index_to_cache()
+        
         self.is_running = True
         self.run_button.configure(
             text="停止",
@@ -291,6 +295,8 @@ class ConfigGUI(ctk.CTk):
                     state="normal"  # 恢复按钮状态
                 )
                 self.set_config_entries_state("normal")
+                # 重新加载缓存中的序号
+                self.load_index_from_cache()
                 self.log("已停止运行")
                 # 清理日志处理器
                 self.cleanup_log_handlers()
@@ -437,6 +443,8 @@ class ConfigGUI(ctk.CTk):
                         state="normal"  # 恢复按钮状态
                     )
                     self.set_config_entries_state("normal")
+                    # 重新加载缓存中的序号
+                    self.load_index_from_cache()
                     self.log("已停止运行")
         
         # 在新线程中运行上传任务
@@ -513,6 +521,8 @@ class ConfigGUI(ctk.CTk):
             with open(config_path, "w", encoding="utf-8") as f:
                 f.write("# 配置文件（注意：若是手动修改该配置文件，需要重新运行程序才能生效）\n")
                 for key, entry in self.config_entries.items():
+                    if key.startswith("UI_"):   # UI_前缀的配置项表示仅用于ui界面，不不需要保存到configs.py配置文件
+                        continue
                     if isinstance(entry, ctk.CTkCheckBox):
                         value = bool(entry.get())
                     else:
@@ -532,6 +542,40 @@ class ConfigGUI(ctk.CTk):
         self.log_text.delete(1.0, "end")
         self.log_text.configure(state="disabled")
         self.log("日志已清理")
+
+    def get_index_cache_path(self):
+        """获取序号缓存文件路径"""
+        kb_id = self.config_entries["DIFY_DOC_KB_ID"].get()
+        kb_name = self.config_entries["KB_NAME"].get()
+        return os.path.join(get_config_dir(), f"index_{kb_id}_{kb_name}.txt")
+
+    def load_index_from_cache(self):
+        """从缓存文件加载序号"""
+        try:
+            index_path = self.get_index_cache_path()
+            if os.path.exists(index_path):
+                with open(index_path, 'r', encoding='utf-8') as f:
+                    index = f.read().strip()
+                    if index:
+                        self.config_entries["UI_START_INDEX"].delete(0, "end")
+                        self.config_entries["UI_START_INDEX"].insert(0, str(index))
+                        self.log(f"从 {index_path} 文件中读取文件序号: {index}")
+        except Exception as e:
+            self.log(f"加载序号缓存失败: {str(e)}")
+
+    def save_index_to_cache(self):
+        """保存序号到缓存文件"""
+        try:
+            index = self.config_entries["UI_START_INDEX"].get()
+            if index:
+                index = int(index)
+                index_path = self.get_index_cache_path()
+                os.makedirs(os.path.dirname(index_path), exist_ok=True)
+                with open(index_path, 'w', encoding='utf-8') as f:
+                    f.write(str(index))
+                self.log(f"保存文件序号（{index}）到: {index_path}")
+        except Exception as e:
+            self.log(f"保存序号缓存失败: {str(e)}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
