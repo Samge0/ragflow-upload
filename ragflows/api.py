@@ -124,21 +124,27 @@ def parse_chunks(doc_ids, run=1):
         }
 
 @timeutils.monitor
-def parse_chunks_with_check(filename):
+def parse_chunks_with_check(filename, doc_id=None):
     """解析文档，并仅当文档解析完毕后才返回
 
     Args:
         filename (str): 文件名，非文件路径
+        doc_id (str): 文档id
 
     Returns:
         bool: 是否已上传并解析完毕
     """
-    doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES)
-    if not doc_item:
-        timeutils.print_log(f'找不到{filename}对应的数据库记录，跳过')
-        return False
     
-    doc_id = doc_item.get('id')
+    if not doc_id:
+        timeutils.print_log(f'根据文件名[{filename}]从数据库获取文档id')
+        doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES)
+        if not doc_item:
+            timeutils.print_log(f'找不到{filename}对应的数据库记录，跳过')
+            return False
+        
+        doc_id = doc_item.get('id')
+        
+    # 开始解析文档
     r = parse_chunks(doc_ids=[doc_id], run=1)
     
     if not is_succeed(r):
@@ -146,7 +152,7 @@ def parse_chunks_with_check(filename):
         return False
     
     while True:
-        doc_item = ragflowdb.get_doc_item(doc_id)
+        doc_item = ragflowdb.get_doc_item_by_id(doc_id, max_retries=configs.SQL_RETRIES)
         if not doc_item:
             return False
         
