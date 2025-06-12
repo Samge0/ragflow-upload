@@ -3,6 +3,7 @@ import os
 from ragflows import api, configs, ragflowdb
 from utils import fileutils, timeutils
 from pathlib import Path
+import time
 
 
 def get_docs_files() -> list:
@@ -127,7 +128,7 @@ def main():
             elif doc_item.get('progress') == 1:
                 timeutils.print_log(f"{file_path} 已完成切片，跳过\n")
             else:
-                timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
+                timeutils.print_log(f'【文件已存在，但未解析】{file_path}，开始切片并等待解析完毕')
                 status = api.parse_chunks_with_check(filename)
                 timeutils.print_log(f"{file_path} 切片状态：", status, "\n")
             continue
@@ -148,6 +149,11 @@ def main():
         # 仅上传，跳过切片解析
         if configs.ONLY_UPLOAD:
             continue
+        
+        # 如果设置了首次解析等待时间，则等待指定时间
+        if configs.FIRST_PARSE_WAIT_TIME > 0:
+            timeutils.print_log(f'上传成功，已配置【首次上传后解析等待时间】，等待 {configs.FIRST_PARSE_WAIT_TIME} 秒后再进行解析...')
+            time.sleep(configs.FIRST_PARSE_WAIT_TIME)
         
         # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')

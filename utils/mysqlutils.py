@@ -30,11 +30,7 @@ class BaseMySql(object):
                 port=port
             )
             self.cursor = self.conn.cursor()
-            
-            # 设置事务隔离级别为“读已提交”（Read Committed），避免长连接模式下无法读取到最新数据
-            self.cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
-            self.conn.commit()
-
+            self.set_transaction_isolation()
         except Exception as e:
             timeutils.print_log(f'连接数据库异常: {e}')
             pass
@@ -47,7 +43,9 @@ class BaseMySql(object):
         """
         try:
             # 检查连接是否断开，如果断开就进行重连
-            self.conn.ping(reconnect=True)
+            if self.conn.ping(reconnect=True):
+                # 只有在真正重连后才需要重新设置事务隔离级别
+                self.set_transaction_isolation()
             cur = self.cursor
             cur.execute(sql)
             columns = [col[0] for col in cur.description]
@@ -63,7 +61,9 @@ class BaseMySql(object):
         :return: True=执行成功, False=执行失败
         """
         try:
-            self.conn.ping(reconnect=True)
+            if self.conn.ping(reconnect=True):
+                # 只有在真正重连后才需要重新设置事务隔离级别
+                self.set_transaction_isolation()
             cur = self.cursor
             cur.execute(sql)
             self.conn.commit()
@@ -151,3 +151,11 @@ class BaseMySql(object):
         （子类必须实现该方法）
         """
         raise self.get_error_tip()
+
+    def set_transaction_isolation(self):
+        """设置事务隔离级别为读已提交"""
+        try:
+            self.cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED")
+            self.conn.commit()
+        except Exception as e:
+            timeutils.print_log(f'设置事务隔离级别异常: {e}')

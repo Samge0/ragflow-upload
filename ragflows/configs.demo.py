@@ -34,5 +34,8 @@ PROGRESS_CHECK_INTERVAL = 1
 # 查数据库重试次数（单次重试间隔为1秒）
 SQL_RETRIES = 0
 
+# 首次上传后解析文件的等待时间
+FIRST_PARSE_WAIT_TIME = 0
+
 def get_header():
     return {'authorization': AUTHORIZATION}
