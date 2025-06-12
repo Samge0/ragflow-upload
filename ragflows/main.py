@@ -98,6 +98,9 @@ def main():
     if start_index > file_total:
         raise ValueError(f"起始文件序号 {start_index} > 文件总数 {file_total}，请修改为正确的序号值，或者删除序号缓存文件：{index_filepath}")
     
+    # 标记是否是首次上传
+    is_first_upload = True
+    
     # 打印找到的所有 .md 文件
     for i in range(file_total):
         
@@ -150,10 +153,11 @@ def main():
         if configs.ONLY_UPLOAD:
             continue
         
-        # 如果设置了首次解析等待时间，则等待指定时间
-        if configs.FIRST_PARSE_WAIT_TIME > 0:
-            timeutils.print_log(f'上传成功，已配置【首次上传后解析等待时间】，等待 {configs.FIRST_PARSE_WAIT_TIME} 秒后再进行解析...')
+        # 如果是首次上传且设置了首次解析等待时间，则等待指定时间
+        if is_first_upload and configs.FIRST_PARSE_WAIT_TIME > 0:
+            timeutils.print_log(f'首次上传成功，已配置【首次上传后解析等待时间】，等待 {configs.FIRST_PARSE_WAIT_TIME} 秒后再进行解析...')
             time.sleep(configs.FIRST_PARSE_WAIT_TIME)
+            is_first_upload = False
         
         # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')

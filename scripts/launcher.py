@@ -414,6 +414,9 @@ class ConfigGUI(ctk.CTk):
                         # 将停止检查函数添加到main模块
                         main_module.check_stop = check_stop
                         
+                        # 重置is_first_upload变量
+                        main_module.is_first_upload = True
+                        
                         # 运行主程序
                         main_module.main()
                     except KeyboardInterrupt:
