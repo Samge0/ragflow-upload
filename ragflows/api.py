@@ -4,6 +4,8 @@
 # date：2024-08-23 16:46
 # describe：
 
+import json
+import os
 import time
 import requests
 from ragflows import configs, ragflowdb
@@ -177,3 +179,70 @@ def parse_chunks_with_check(filename, doc_id=None):
 def is_succeed(response):
     # 20250208：增加对code字段的判断，因为新版ragflow返回字段名由retcode改为code了，保留retcode兼容旧版ragflow
     return response.get("retcode") == 0 or response.get("code") == 0
+
+# @timeutils.monitor
+def set_document_metadata(doc_id, filepath) -> bool:
+    """设置文档元数据
+
+    Args:
+        doc_id (str): 文档ID
+        filepath (str): 需要设置元数据的文件路径，用于读取 文件名+元数据后缀 的json文件
+
+    Returns:
+        bool: 是否成功
+    """
+    
+    # 没有配置元数据后缀，跳过
+    if not configs.METADATA_SUFFIX:
+        return False
+    
+    if not doc_id:
+        timeutils.print_log(F'设置文档元数据失败: doc_id为空，跳过')
+        return False
+    
+    # 构建元数据文件路径-移除原文件后缀再拼接元数据后缀
+    filepath_without_ext = os.path.splitext(filepath)[0]
+    metadata_filepath = filepath_without_ext + configs.METADATA_SUFFIX
+    
+    # 检查元数据文件是否存在
+    if not os.path.exists(metadata_filepath):
+        timeutils.print_log(f'元数据文件不存在，跳过: {metadata_filepath}')
+        return False
+    
+    # 读取元数据文件内容
+    try:
+        with open(metadata_filepath, 'r', encoding='utf-8') as f:
+            metadata = f.read().strip()
+    except Exception as e:
+        timeutils.print_log(f'设置文档元数据失败: 读取元数据文件出错，跳过: {e}')
+        return False
+    
+    # 判断metadata是否json
+    try:
+        json.loads(metadata)
+    except:
+        timeutils.print_log(f'设置文档元数据失败: metadata不是json格式，跳过')
+        return False
+    
+    # 开始设置元数据
+    url = f"{configs.API_URL}/document/set_meta"
+    data = {
+        "doc_id": doc_id,
+        "meta": metadata
+    }
+    
+    try:
+        r = requests.post(url, json=data, headers=configs.get_header())
+        
+        if is_succeed(r.json()):
+            timeutils.print_log(F'设置文档元数据成功: {doc_id}')
+            return True
+        else:
+            timeutils.print_log(F'设置文档元数据失败:{doc_id}，{r.text}')
+            return False
+        
+    except Exception as e:
+        timeutils.print_log(f'设置文档元数据失败: 请求异常，跳过: {e}')
+        return False
+    
+    

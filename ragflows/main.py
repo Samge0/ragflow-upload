@@ -108,6 +108,11 @@ def main():
             continue
         
         file_path = doc_files[i]
+        
+        # 如果配置了元数据后缀，且文件是元数据后缀，则跳过
+        if configs.METADATA_SUFFIX and file_path.endswith(configs.METADATA_SUFFIX):
+            continue
+        
         file_path = file_path.replace(os.sep, '/')
         filename = os.path.basename(file_path)
         
@@ -126,6 +131,11 @@ def main():
         # 如果文件已存在，则判断是否已经对文件进行了切片解析
         if ragflowdb.exist_name(filename):
             doc_item = ragflowdb.get_doc_item_by_name(filename)
+            
+            # 检查配置并更新元数据
+            doc_id = doc_item.get('id')
+            api.set_document_metadata(doc_id, file_path)
+            
             if configs.ONLY_UPLOAD:
                 timeutils.print_log(f"{file_path} 已存在，跳过\n")
             elif doc_item.get('progress') == 1:
@@ -149,6 +159,12 @@ def main():
             timeutils.print_log(f'{file_path} 上传失败：{response.get("text")}')
             continue
         
+        # 解析doc_id
+        doc_id = response.get('data')[0].get('id') if response.get('data') else None
+        
+        # 检查配置并更新元数据
+        api.set_document_metadata(doc_id, file_path)
+        
         # 仅上传，跳过切片解析
         if configs.ONLY_UPLOAD:
             continue
@@ -161,7 +177,6 @@ def main():
         
         # 上传成功，开始切片
         timeutils.print_log(f'{file_path}，开始切片并等待解析完毕')
-        doc_id = response.get('data')[0].get('id') if response.get('data') else None
         status = api.parse_chunks_with_check(filename, doc_id)
         timeutils.print_log(file_path, "切片状态：", status, "\n")
     

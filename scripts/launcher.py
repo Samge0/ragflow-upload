@@ -112,6 +112,7 @@ class ConfigGUI(ctk.CTk):
             "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
             "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印切片进度日志", "default": "True"},
             "UI_START_INDEX": {"type": int, "label": "起始文件序号", "default": "1"},  # 从1开始计数，更符合非编程用户习惯
+            "METADATA_SUFFIX": {"type": str, "label": "元数据文件后缀", "default": ""},
         }
         
         self.create_ui()

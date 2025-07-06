@@ -37,5 +37,8 @@ SQL_RETRIES = 0
 # 首次上传后解析文件的等待时间
 FIRST_PARSE_WAIT_TIME = 0
 
+# 元数据后缀，需要跟上传文件放在同一目录，json格式。只有当该配置不为空时才会自动添加/更新元数据信息
+METADATA_SUFFIX = ''    # 例如：.meta.json
+
 def get_header():
     return {'authorization': AUTHORIZATION}
