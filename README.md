@@ -10,7 +10,7 @@
 
 如果想要自己构建`windows / MAC / linux`系统下的可执行程序，可参考[scripts/README.md](scripts/README.md)中的说明进行构建。
 
-![image](https://github.com/user-attachments/assets/34ded25d-6fc2-4648-a66f-74464d246d49)
+![image](https://github.com/user-attachments/assets/2d2c9627-c8ec-4544-ae8d-2336934851db)
 
 如果需要以源码方式运行，可参考下面几个步骤：
 
