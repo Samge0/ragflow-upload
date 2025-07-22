@@ -159,9 +159,16 @@ def main():
             timeutils.print_log(f'{file_path} 上传失败：{response.get("text")}')
             continue
         
-        # 解析doc_id
-        doc_id = response.get('data')[0].get('id') if response.get('data') else None
-        
+        # 尝试从响应内容中解析doc_id，防御性处理，有的版本api返回格式为：{'code': 0, 'data': True, 'message': 'success'}
+        data = response.get('data')
+        doc_id = None
+        if isinstance(data, list) and data and isinstance(data[0], dict):
+            doc_id = data[0].get('id')
+        elif isinstance(data, dict):
+            doc_id = data.get('id')
+        else:
+            timeutils.print_log(f"上传文件后返回数据不包含文档id: {data}")
+
         # 检查配置并更新元数据
         api.set_document_metadata(doc_id, file_path)
         

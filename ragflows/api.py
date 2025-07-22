@@ -36,7 +36,8 @@ def check_api_url() -> tuple[bool, str]:
     
     response = r.json()
     if is_succeed(response):
-        return True, "API地址配置正确"
+        timeutils.print_log(f"ragflow version：{response.get('data')}")
+        return True, f"API地址配置正确"
     
     code = response.get("code")
     message = response.get("message")
@@ -139,8 +140,8 @@ def parse_chunks_with_check(filename, doc_id=None):
     
     if not doc_id:
         timeutils.print_log(f'根据文件名[{filename}]从数据库获取文档id')
-        doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES)
-        if not doc_item:
+        doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES) or {}
+        if not doc_item.get('id'):
             timeutils.print_log(f'找不到{filename}对应的数据库记录，跳过')
             return False
         
@@ -197,8 +198,14 @@ def set_document_metadata(doc_id, filepath) -> bool:
         return False
     
     if not doc_id:
-        timeutils.print_log(F'设置文档元数据失败: doc_id为空，跳过')
-        return False
+        filename = os.path.basename(filepath)
+        timeutils.print_log(f'根据文件名[{filename}]从数据库获取文档id')
+        doc_item = ragflowdb.get_doc_item_by_name(filename, max_retries=configs.SQL_RETRIES) or {}
+        if not doc_item.get('id'):
+            timeutils.print_log(F'设置文档元数据失败: doc_id为空，跳过')
+            return False
+        
+        doc_id = doc_item.get('id')
     
     # 构建元数据文件路径-移除原文件后缀再拼接元数据后缀
     filepath_without_ext = os.path.splitext(filepath)[0]
