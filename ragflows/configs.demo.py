@@ -1,30 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# RAGFlow 配置示例文件
-# 使用方法：复制此文件为 configs.py 并修改相应配置
+# author：samge
+# date：2024-08-23 16:49
+# describe：
 
-# RAGFlow API 配置
-API_URL = 'http://localhost:80/api/v1'  # RAGFlow API 地址
-API_KEY = 'ragflow-xxxxxx'  # API 密钥，从 http://localhost:80/user-setting/api 创建
-DATASET_ID = ''  # 知识库ID（可选，留空则通过名称查找）
-DATASET_NAME = 'my_dataset'  # 知识库名称
+API_URL = 'http://localhost:80/v1'  # ragflow的api地址，请替换为实际的服务器地址
+AUTHORIZATION = 'your authorization'  # ragflow的api鉴权token
+DIFY_DOC_KB_ID = 'your kb_id'  # ragflow的知识库id
+KB_NAME = "your kb_name"  # ragflow的知识库名称
+PARSER_ID = "naive"  # ragflow的知识库文档解析方式
 
-# 文档处理配置
-CHUNK_METHOD = 'naive'  # 分块方法：naive, general, paper, book, laws, presentation, manual, qa
-DOC_DIR = ''  # 文档目录
-DOC_SUFFIX = 'md,txt,pdf,docx'  # 支持的文件后缀
-DOC_MIN_LINES = 6  # 最小文件行数（低于此行数将被跳过）
+DOC_DIR = ''    # 文档目录
+DOC_SUFFIX = 'md,txt,pdf,docx'    # 指定文档后缀
 
-# 解析配置
-ONLY_UPLOAD = False  # 仅上传不解析
-PROGRESS_CHECK_INTERVAL = 5  # 解析进度检查间隔（秒）
-ENABLE_PROGRESS_LOG = True  # 启用解析进度日志
-FIRST_PARSE_WAIT_TIME = 0  # 首次上传后解析等待时间（秒）
+MYSQL_HOST = 'localhost'
+MYSQL_PORT = 5455
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'infini_rag_flow'
+MYSQL_DATABASE = 'rag_flow'
 
-# 元数据配置
-METADATA_SUFFIX = '.meta.json'  # 元数据文件后缀
+# 文档最少行数，低于该值的文档则被忽略，该参数仅作用于 txt,md,html 后缀文件
+DOC_MIN_LINES = 1
 
+# 是否仅上传文件。True=仅上传文件， False=上传文件+自动解析
+ONLY_UPLOAD = False
+
+# 是否打印切片进度查询日志。True=打印，False=不打印
+ENABLE_PROGRESS_LOG = True
+
+# 切片进度查询间隔时间（秒）
+PROGRESS_CHECK_INTERVAL = 1
+
+# 查数据库重试次数（单次重试间隔为1秒）
+SQL_RETRIES = 0
+
+# 首次上传后解析文件的等待时间
+FIRST_PARSE_WAIT_TIME = 0
+
+# 元数据后缀，需要跟上传文件放在同一目录，json格式。只有当该配置不为空时才会自动添加/更新元数据信息
+METADATA_SUFFIX = ''    # 例如：.meta.json
 
 def get_header():
-    """获取API请求头"""
-    return {'authorization': f'Bearer {API_KEY}'}
+    return {'authorization': AUTHORIZATION}

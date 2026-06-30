@@ -20,14 +20,14 @@ jobs:
         echo "Tag: ${{ github.ref }}"
         echo "Event name: ${{ github.event_name }}"
         
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
+      uses: conda-incubator/setup-miniconda@v3
       with:
         architecture: 'x64'
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.10"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
@@ -68,14 +68,14 @@ jobs:
         echo "System architecture:"
         systeminfo | findstr /B /C:"System Type"
         
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
+      uses: conda-incubator/setup-miniconda@v3
       with:
         architecture: 'x86'
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.10"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
@@ -117,13 +117,13 @@ jobs:
         echo "System architecture:"
         uname -m
         
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.10"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
@@ -168,13 +168,13 @@ jobs:
         echo "Tag: ${{ github.ref }}"
         echo "Event name: ${{ github.event_name }}"
         
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.10"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
@@ -224,13 +224,13 @@ jobs:
         echo "Tag: ${{ github.ref }}"
         echo "Event name: ${{ github.event_name }}"
         
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.10"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda

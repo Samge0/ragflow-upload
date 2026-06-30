@@ -3,7 +3,7 @@
 该脚本用于将`Ragflow Upload`项目打包成可执行文件。打包过程会生成一个独立的客户端程序文件，包含所有必要的依赖和资源文件。
 
 ### 打包环境要求
-- python 3.14+
+- python 3.10+
 - pyInstaller
 - customtkinter
 - 项目所需的其他依赖包（见requirements.txt）
@@ -23,7 +23,7 @@
 
 - 使用[miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install#power-shell)创建env环境
    ```shell
-   conda create -n ragflow-upload python=3.14 -y
+   conda create -n ragflow-upload python=3.10.13 -y
    ```
 
 - 激活环境
@@ -44,7 +44,7 @@
 
 - 打包完成后，可执行文件将输出到`dist`目录，程序运行时将从用户目录（`~/.ragflow_upload`）下读取/保存配置
 
-- 除了执行脚本，也可以直接在终端窗口中执行`python scripts/launcher.py`运行客户端程序进行调试/功能预览。
+- 除了执行脚本，也可以直接在终端窗口中执行`python ragflows/launcher.py`运行客户端程序进行调试/功能预览。
 
 ### 注意事项
 - 打包过程会自动处理配置文件，将`configs.demo.py`复制并重命名为`configs.py`
