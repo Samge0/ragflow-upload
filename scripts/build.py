@@ -55,7 +55,6 @@ def build():
         # 添加必要的依赖
         "--hidden-import", "requests",
         "--hidden-import", "pytz",
-        "--hidden-import", "pymysql",
         "--hidden-import", "customtkinter",
         "--hidden-import", "tkinter",
         "--hidden-import", "tkinter.scrolledtext",

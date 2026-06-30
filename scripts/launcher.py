@@ -81,7 +81,7 @@ class ConfigGUI(ctk.CTk):
         self.geometry("800x750")
         
         # 版本和仓库信息
-        self.version = "v1.0.6-alpha"  # 版本号
+        self.version = "v1.0.7+ragflow0.26.2"  # 版本号
         self.github_repo = "https://github.com/Samge0/ragflow-upload"  # GitHub仓库地址
         
         # 自定义图标
@@ -92,32 +92,23 @@ class ConfigGUI(ctk.CTk):
         
         # 配置项定义
         self.config_definitions = {
-            "API_URL": {"type": str, "label": "API地址", "default": "http://localhost:80/v1"},
-            "AUTHORIZATION": {"type": str, "label": "授权Token", "default": "your authorization"},
-            "DIFY_DOC_KB_ID": {"type": str, "label": "知识库ID", "default": "your kb_id"},
-            "KB_NAME": {"type": str, "label": "知识库名称", "default": "your kb_name"},
-            "PARSER_ID": {"type": str, "label": "解析方式", "default": "naive"},
+            "API_URL": {"type": str, "label": "API地址", "default": "http://localhost:80/api/v1"},
+            "API_KEY": {"type": str, "label": "API密钥", "default": "ragflow-xxxxxx"},
+            "DATASET_ID": {"type": str, "label": "知识库ID", "default": ""},
+            "DATASET_NAME": {"type": str, "label": "知识库名称", "default": "my_dataset"},
+            "CHUNK_METHOD": {"type": str, "label": "分块方法", "default": "naive"},
             "DOC_DIR": {"type": str, "label": "文档目录", "default": "your doc dir"},
             "DOC_SUFFIX": {"type": str, "label": "文档后缀", "default": "md,txt,pdf,docx"},
-            "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "切片进度查询间隔", "default": "1"},
-            "SQL_RETRIES": {"type": int, "label": "SQL查询重试次数", "default": "1"},
-            "FIRST_PARSE_WAIT_TIME": {"type": int, "label": "首次解析等待时间", "default": "0"},
-            
-            "MYSQL_HOST": {"type": str, "label": "MySQL主机", "default": "localhost"},
-            "MYSQL_PORT": {"type": int, "label": "MySQL端口", "default": "5455"},
-            "MYSQL_USER": {"type": str, "label": "MySQL用户名", "default": "root"},
-            "MYSQL_PASSWORD": {"type": str, "label": "MySQL密码", "default": "infini_rag_flow"},
-            "MYSQL_DATABASE": {"type": str, "label": "MySQL数据库", "default": "rag_flow"},
-            "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "1"},
+            "DOC_MIN_LINES": {"type": int, "label": "最小行数", "default": "6"},
             "ONLY_UPLOAD": {"type": bool, "label": "仅上传文件", "default": "False"},
-            "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印切片进度日志", "default": "True"},
-            "UI_START_INDEX": {"type": int, "label": "起始文件序号", "default": "1"},  # 从1开始计数，更符合非编程用户习惯
-            "METADATA_SUFFIX": {"type": str, "label": "元数据文件后缀", "default": ""},
+            "PROGRESS_CHECK_INTERVAL": {"type": int, "label": "解析进度查询间隔", "default": "5"},
+            "ENABLE_PROGRESS_LOG": {"type": bool, "label": "打印解析进度日志", "default": "True"},
+            "FIRST_PARSE_WAIT_TIME": {"type": int, "label": "首次解析等待时间", "default": "0"},
+            "METADATA_SUFFIX": {"type": str, "label": "元数据文件后缀", "default": ".meta.json"},
         }
         
         self.create_ui()
         self.load_config()
-        self.load_index_from_cache()  # 加载缓存中的序号
 
     def create_ui(self):
         # 主框架
@@ -190,6 +181,17 @@ class ConfigGUI(ctk.CTk):
             text_color="white"  # 白色文字
         )
         self.clear_log_button.pack(side="left", padx=5, pady=5)
+
+        # 添加清除进度按钮
+        self.clear_progress_button = ctk.CTkButton(
+            button_frame,
+            text="清除进度",
+            command=self.clear_progress,
+            fg_color=["#757575", "#616161"],  # 灰色
+            hover_color=["#616161", "#424242"],  # 深灰色
+            text_color="white"  # 白色文字
+        )
+        self.clear_progress_button.pack(side="left", padx=5, pady=5)
         
         # 日志区域
         log_frame = ctk.CTkFrame(self.main_frame)
@@ -248,9 +250,6 @@ class ConfigGUI(ctk.CTk):
 
     def start_run(self):
         """开始运行"""
-        # 保存当前序号到缓存
-        self.save_index_to_cache()
-        
         self.is_running = True
         self.run_button.configure(
             text="停止",
@@ -297,8 +296,6 @@ class ConfigGUI(ctk.CTk):
                     state="normal"  # 恢复按钮状态
                 )
                 self.set_config_entries_state("normal")
-                # 重新加载缓存中的序号
-                self.load_index_from_cache()
                 self.log("已停止运行")
                 # 清理日志处理器
                 self.cleanup_log_handlers()
@@ -382,17 +379,7 @@ class ConfigGUI(ctk.CTk):
                     api_module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(api_module)
                     sys.modules["ragflows.api"] = api_module
-                    
-                    # 重置数据库连接
-                    try:
-                        from ragflows.ragflowdb import reset_connection
-                        reset_connection()
-                        self.log("数据库连接已重置")
-                    except Exception as e:
-                        self.log(f"数据库连接失败: {str(e)}，请检查数据库配置后重试")
-                        self.should_stop = True  # 设置停止标志
-                        return  # 中断执行
-                
+
                 # 动态导入主程序
                 main_path = get_resource_path(os.path.join("ragflows", "main.py"))
                 spec = importlib.util.spec_from_file_location("main", main_path)
@@ -448,8 +435,6 @@ class ConfigGUI(ctk.CTk):
                         state="normal"  # 恢复按钮状态
                     )
                     self.set_config_entries_state("normal")
-                    # 重新加载缓存中的序号
-                    self.load_index_from_cache()
                     self.log("已停止运行")
         
         # 在新线程中运行上传任务
@@ -536,7 +521,7 @@ class ConfigGUI(ctk.CTk):
                             value = int(value)
                     f.write(f"{key} = {repr(value)}\n")
                 # 添加get_header函数
-                f.write("\n\ndef get_header():\n    return {'authorization': AUTHORIZATION}\n")
+                f.write("\n\ndef get_header():\n    return {'authorization': f'Bearer {API_KEY}'}\n")
             self.log("配置已保存")
         except Exception as e:
             self.log(f"保存配置失败: {str(e)}")
@@ -548,39 +533,51 @@ class ConfigGUI(ctk.CTk):
         self.log_text.configure(state="disabled")
         self.log("日志已清理")
 
-    def get_index_cache_path(self):
-        """获取序号缓存文件路径"""
-        kb_id = self.config_entries["DIFY_DOC_KB_ID"].get()
-        kb_name = self.config_entries["KB_NAME"].get()
-        return os.path.join(get_config_dir(), f"index_{kb_id}_{kb_name}.txt")
+    def clear_progress(self):
+        """清除当前知识库的处理进度（删除 state.json）"""
+        # 运行中禁止清除，避免状态错乱
+        if self.is_running:
+            self.log("运行中无法清除进度，请先停止")
+            return
 
-    def load_index_from_cache(self):
-        """从缓存文件加载序号"""
-        try:
-            index_path = self.get_index_cache_path()
-            if os.path.exists(index_path):
-                with open(index_path, 'r', encoding='utf-8') as f:
-                    index = f.read().strip()
-                    if index:
-                        self.config_entries["UI_START_INDEX"].delete(0, "end")
-                        self.config_entries["UI_START_INDEX"].insert(0, str(index))
-                        self.log(f"从 {index_path} 文件中读取文件序号: {index}")
-        except Exception as e:
-            self.log(f"加载序号缓存失败: {str(e)}")
+        # 获取当前 dataset 的 cache_key
+        dataset_id = self.config_entries["DATASET_ID"].get()
+        dataset_name = self.config_entries["DATASET_NAME"].get()
+        cache_key = dataset_id if dataset_id else dataset_name
 
-    def save_index_to_cache(self):
-        """保存序号到缓存文件"""
+        if not cache_key:
+            self.log("无法获取知识库ID或名称，清除进度失败")
+            return
+
+        # 实例化 StateStore 以获取 state.json 的完整路径
         try:
-            index = self.config_entries["UI_START_INDEX"].get()
-            if index:
-                index = int(index)
-                index_path = self.get_index_cache_path()
-                os.makedirs(os.path.dirname(index_path), exist_ok=True)
-                with open(index_path, 'w', encoding='utf-8') as f:
-                    f.write(str(index))
-                self.log(f"保存文件序号（{index}）到: {index_path}")
+            from utils.statestore import StateStore
+            state = StateStore(cache_key)
         except Exception as e:
-            self.log(f"保存序号缓存失败: {str(e)}")
+            self.log(f"清除进度失败：{str(e)}")
+            return
+
+        state_file = state.state_filepath
+
+        # 如果状态文件不存在，说明本来就没有进度记录
+        if not os.path.exists(state_file):
+            self.log(f"当前没有进度记录可清除：{state_file}")
+            return
+
+        # 二次确认：明确显示将删除哪个文件
+        from tkinter import messagebox
+        if not messagebox.askyesno(
+            "确认清除进度",
+            f"将删除进度记录文件：\n  {state_file}\n\n下次运行时会重新处理所有文件。\n\n确定继续吗？"
+        ):
+            return
+
+        # 执行清除
+        try:
+            state.reset()
+            self.log(f"已清除进度记录：{state_file}")
+        except Exception as e:
+            self.log(f"清除进度失败：{str(e)}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
