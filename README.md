@@ -30,7 +30,7 @@ RagFlow 默认知识库上传界面存在部分局限性：每次只能上传有
 
 ## 系统要求
 
-- Python 3.14+
+- Python 3.13+
 - RAGFlow v0.26.2+
 
 ## 安装
@@ -46,11 +46,11 @@ cd ragflow-upload
 
 ```bash
 # 使用 miniconda
-conda create -n ragflow-upload python=3.14 -y
+conda create -n ragflow-upload python=3.13 -y
 conda activate ragflow-upload
 
 # 或使用 uv
-uv venv --python 3.14
+uv venv --python 3.13
 # Windows: .\.venv\Scripts\activate
 # Linux/Mac: source .venv/bin/activate
 ```
