@@ -29,6 +29,7 @@ jobs:
         miniconda-version: "latest"
         python-version: "3.13"
         activate-environment: "ragflow-upload"
+        conda-remove-defaults: true
         
     - name: Install dependencies with Conda
       run: |
@@ -75,6 +76,7 @@ jobs:
         miniconda-version: "latest"
         python-version: "3.13"
         activate-environment: "ragflow-upload"
+        conda-remove-defaults: true
         
     - name: Install dependencies with Conda
       run: |
@@ -125,6 +127,7 @@ jobs:
         miniconda-version: "latest"
         python-version: "3.13"
         activate-environment: "ragflow-upload"
+        conda-remove-defaults: true
         
     - name: Install dependencies with Conda
       run: |
@@ -180,6 +183,7 @@ jobs:
         miniconda-version: "latest"
         python-version: "3.13"
         activate-environment: "ragflow-upload"
+        conda-remove-defaults: true
         
     - name: Install dependencies with Conda
       run: |
@@ -228,7 +232,7 @@ jobs:
         path: artifacts
         
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: |
           artifacts/windows-x64-artifact/RagFlowUpload-windows-x64.exe
