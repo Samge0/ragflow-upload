@@ -106,7 +106,7 @@ def build():
     pyinstaller_cmd.append("scripts/launcher.py")
     
     # 执行打包命令
-    subprocess.run(pyinstaller_cmd)
+    subprocess.run(pyinstaller_cmd, check=True)
     
     # 清理临时文件
     _clean_file(temp_config_path, False)

@@ -27,20 +27,19 @@ jobs:
       with:
         architecture: 'x64'
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.13"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
       run: |
-        conda install -y -c conda-forge tk
-        conda install -y -c conda-forge pyinstaller
-        pip install -r requirements.txt
-        pip install -r scripts/requirements.txt
+        conda install -y -n ragflow-upload -c conda-forge tk
+        conda run -n ragflow-upload --no-capture-output pip install -r requirements.txt
+        conda run -n ragflow-upload --no-capture-output pip install -r scripts/requirements.txt
         
     - name: Build with PyInstaller
       run: |
         $env:TARGET_ARCH="x64"
-        python scripts/build.py
+        conda run -n ragflow-upload --no-capture-output python scripts/build.py
         
     - name: List build artifacts
       run: |
@@ -55,55 +54,6 @@ jobs:
       with:
         name: windows-x64-artifact
         path: dist/RagFlowUpload-windows-x64.exe
-
-  build-windows-x86:
-    runs-on: windows-2022
-    timeout-minutes: 30
-    steps:
-    - name: Debug Information
-      run: |
-        echo "Running on Windows x86"
-        echo "Tag: ${{ github.ref }}"
-        echo "Event name: ${{ github.event_name }}"
-        echo "System architecture:"
-        systeminfo | findstr /B /C:"System Type"
-        
-    - uses: actions/checkout@v6
-    
-    - name: Set up Conda
-      uses: conda-incubator/setup-miniconda@v4
-      with:
-        architecture: 'x86'
-        miniconda-version: "latest"
-        python-version: "3.14"
-        activate-environment: "ragflow-upload"
-        
-    - name: Install dependencies with Conda
-      run: |
-        conda install -y -c conda-forge tk
-        conda install -y -c conda-forge pyinstaller
-        pip install -r requirements.txt
-        pip install -r scripts/requirements.txt
-        
-    - name: Build with PyInstaller
-      run: |
-        $env:TARGET_ARCH="x86"
-        python scripts/build.py
-        
-    - name: List build artifacts
-      run: |
-        echo "Listing dist directory contents:"
-        dir dist
-        
-    - name: Rename Windows x86 binary
-      run: |
-        move dist\RagFlowUpload.exe dist\RagFlowUpload-windows-x86.exe
-        
-    - name: Upload Windows x86 artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-x86-artifact
-        path: dist/RagFlowUpload-windows-x86.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -123,15 +73,14 @@ jobs:
       uses: conda-incubator/setup-miniconda@v4
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.13"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
       run: |
-        conda install -y -c conda-forge tk
-        conda install -y -c conda-forge pyinstaller
-        pip install -r requirements.txt
-        pip install -r scripts/requirements.txt
+        conda install -y -n ragflow-upload -c conda-forge tk
+        conda run -n ragflow-upload --no-capture-output pip install -r requirements.txt
+        conda run -n ragflow-upload --no-capture-output pip install -r scripts/requirements.txt
         
     - name: Build with PyInstaller
       run: |
@@ -139,7 +88,7 @@ jobs:
         ARCH=$(uname -m)
         echo "Building for Linux $ARCH"
         export TARGET_ARCH="$ARCH"
-        python scripts/build.py
+        conda run -n ragflow-upload --no-capture-output python scripts/build.py
         
     - name: List build artifacts
       run: |
@@ -158,8 +107,8 @@ jobs:
         path: dist/RagFlowUpload-linux-*
 
   build-macos-x86_64:
-    # github action目前（20250514）最低的macos版本是13：https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
-    runs-on: macos-13
+    # macos-13 于 2025-12-04 EOL；macos-15-intel 是 GitHub 为 Intel x86_64 用户提供的标准 runner（免费账号可用，支持到 2027-08）：https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+    runs-on: macos-15-intel
     timeout-minutes: 30
     steps:
     - name: Debug Information
@@ -174,20 +123,19 @@ jobs:
       uses: conda-incubator/setup-miniconda@v4
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.13"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
       run: |
-        conda install -y -c conda-forge tk
-        conda install -y -c conda-forge pyinstaller
-        pip install -r requirements.txt
-        pip install -r scripts/requirements.txt
+        conda install -y -n ragflow-upload -c conda-forge tk
+        conda run -n ragflow-upload --no-capture-output pip install -r requirements.txt
+        conda run -n ragflow-upload --no-capture-output pip install -r scripts/requirements.txt
         
     - name: Build with PyInstaller
       run: |
         export TARGET_ARCH="x86_64"
-        python scripts/build.py
+        conda run -n ragflow-upload --no-capture-output python scripts/build.py
         
     - name: List build artifacts
       run: |
@@ -230,20 +178,19 @@ jobs:
       uses: conda-incubator/setup-miniconda@v4
       with:
         miniconda-version: "latest"
-        python-version: "3.14"
+        python-version: "3.13"
         activate-environment: "ragflow-upload"
         
     - name: Install dependencies with Conda
       run: |
-        conda install -y -c conda-forge tk
-        conda install -y -c conda-forge pyinstaller
-        pip install -r requirements.txt
-        pip install -r scripts/requirements.txt
+        conda install -y -n ragflow-upload -c conda-forge tk
+        conda run -n ragflow-upload --no-capture-output pip install -r requirements.txt
+        conda run -n ragflow-upload --no-capture-output pip install -r scripts/requirements.txt
         
     - name: Build with PyInstaller
       run: |
         export TARGET_ARCH="arm64"
-        python scripts/build.py
+        conda run -n ragflow-upload --no-capture-output python scripts/build.py
         
     - name: List build artifacts
       run: |
@@ -271,7 +218,7 @@ jobs:
         path: dist/ragflow-upload-macos-arm64.dmg
 
   create-release:
-    needs: [build-windows-x64, build-windows-x86, build-linux, build-macos-x86_64, build-macos-arm64]
+    needs: [build-windows-x64, build-linux, build-macos-x86_64, build-macos-arm64]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -285,7 +232,6 @@ jobs:
       with:
         files: |
           artifacts/windows-x64-artifact/RagFlowUpload-windows-x64.exe
-          artifacts/windows-x86-artifact/RagFlowUpload-windows-x86.exe
           artifacts/linux-artifact/RagFlowUpload-linux-*
           artifacts/macos-x86_64-artifact/ragflow-upload-macos-x86_64.dmg
           artifacts/macos-arm64-artifact/ragflow-upload-macos-arm64.dmg
