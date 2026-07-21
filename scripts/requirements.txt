@@ -1,4 +1,4 @@
 # UI 框架依赖
 customtkinter==6.0.0
 pyinstaller==6.21.0
-Pillow==12.2.0
+Pillow==12.3.0
