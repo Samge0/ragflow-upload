@@ -6,7 +6,7 @@
   <p>基于 <a href="https://github.com/infiniflow/ragflow">RAGFlow</a> v0.26.2+ API 的文档批量上传、解析工具。</p>
   <p>
     <a href="https://samge0.github.io/ragflow-upload/">
-      <img src="https://img.shields.io/badge/🌐_宣传主页-samge0.github.io-f8bd3c?style=for-the-badge&labelColor=1a1a1a" alt="宣传主页">
+      <img src="https://img.shields.io/badge/🌐_项目主页-samge0.github.io-f8bd3c?style=for-the-badge&labelColor=1a1a1a" alt="项目主页">
     </a>
     &nbsp;
     <a href="https://github.com/Samge0/ragflow-upload/releases">
@@ -18,7 +18,7 @@
     </a>
   </p>
   <p>
-    <a href="https://samge0.github.io/ragflow-upload/">👉 点击访问精美宣传主页</a>
+    <a href="https://samge0.github.io/ragflow-upload/">👉 点击访问项目主页</a>
     &nbsp;·&nbsp;
     <a href="#安装">📖 查看文档</a>
   </p>
