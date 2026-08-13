@@ -1,6 +1,30 @@
-# RAGFlow 文档批量上传工具
+<div align="center">
+  <a href="https://samge0.github.io/ragflow-upload/">
+    <img src="scripts/icon.png" width="100" height="100" alt="RAGFlow Upload">
+  </a>
+  <h1>RAGFlow 文档批量上传工具</h1>
+  <p>基于 <a href="https://github.com/infiniflow/ragflow">RAGFlow</a> v0.26.2+ API 的文档批量上传、解析工具。</p>
+  <p>
+    <a href="https://samge0.github.io/ragflow-upload/">
+      <img src="https://img.shields.io/badge/🌐_宣传主页-samge0.github.io-f8bd3c?style=for-the-badge&labelColor=1a1a1a" alt="宣传主页">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Samge0/ragflow-upload/releases">
+      <img src="https://img.shields.io/badge/⬇️_下载客户端-Windows%20%7C%20macOS%20%7C%20Linux-0f9d58?style=for-the-badge&labelColor=1a1a1a" alt="下载客户端">
+    </a>
+    &nbsp;
+    <a href="https://github.com/Samge0/ragflow-upload/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/📜_开源协议-MIT%20License-666666?style=for-the-badge&labelColor=1a1a1a" alt="MIT License">
+    </a>
+  </p>
+  <p>
+    <a href="https://samge0.github.io/ragflow-upload/">👉 点击访问精美宣传主页</a>
+    &nbsp;·&nbsp;
+    <a href="#安装">📖 查看文档</a>
+  </p>
+</div>
 
-基于 [RAGFlow](https://github.com/infiniflow/ragflow) v0.26.2+ API 的文档批量上传、解析工具。
+---
 
 RagFlow 默认知识库上传界面存在部分局限性：每次只能上传有限数量的文件，当需要上传大量文件时，操作可能有点繁琐。
 

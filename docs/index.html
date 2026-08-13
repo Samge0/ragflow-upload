@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAGFlow Upload - 文档批量上传工具</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', 'Inter', system-ui, sans-serif;
+        }
+        .font-serif-sc {
+            font-family: 'Noto Serif SC', serif;
+        }
+        .font-en {
+            font-family: 'Manrope', 'Inter', sans-serif;
+        }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .glassmorphism-dark {
+            background: rgba(38, 38, 38, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-amber {
+            background: linear-gradient(135deg, #f8bd3c 0%, #f59e0b 50%, #d97706 100%);
+        }
+        .text-gradient-amber {
+            background: linear-gradient(135deg, #f8bd3c 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 text-neutral-900 antialiased">
+    <!-- Top Nav -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glassmorphism border-b border-amber-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="icon.png" alt="RAGFlow Upload" class="w-9 h-9">
+                    <span class="text-lg font-semibold text-neutral-900">RAGFlow Upload</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-neutral-600 hover:text-amber-600 transition-colors">核心功能</a>
+                    <a href="#how-it-works" class="text-neutral-600 hover:text-amber-600 transition-colors">使用方法</a>
+                    <a href="#faq" class="text-neutral-600 hover:text-amber-600 transition-colors">常见问题</a>
+                    <a href="https://github.com/Samge0/ragflow-upload" target="_blank" class="text-neutral-600 hover:text-amber-600 transition-colors flex items-center space-x-1">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://github.com/Samge0/ragflow-upload/releases" target="_blank" class="gradient-amber text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">下载客户端</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 bg-gradient-to-br from-amber-50 via-amber-100/30 to-neutral-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <div class="inline-flex items-center space-x-2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium mb-6">
+                        <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                        <span>v1.0.7+ragflow0.26.2</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-tight mb-6">
+                        <span class="text-gradient-amber">RAGFlow 文档</span><br>
+                        <span class="font-serif-sc">批量上传工具</span>
+                    </h1>
+                    <p class="text-lg text-neutral-600 mb-8 leading-relaxed max-w-xl">
+                        基于 RAGFlow v0.26.2+ API 的文档批量上传与自动解析工具，解放双手，告别繁琐的手动分批操作。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="https://github.com/Samge0/ragflow-upload/releases" target="_blank" class="gradient-amber text-white px-8 py-4 rounded-xl font-semibold text-center hover:shadow-lg hover:shadow-amber-200 transition-all flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>下载客户端</span>
+                        </a>
+                        <a href="https://github.com/Samge0/ragflow-upload" target="_blank" class="bg-white text-neutral-700 px-8 py-4 rounded-xl font-semibold border border-neutral-200 hover:border-amber-300 hover:text-amber-700 transition-all text-center flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            <span>查看源码</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="fade-in relative" style="animation-delay: 0.2s">
+                    <div class="relative bg-white rounded-2xl shadow-xl shadow-amber-100/50 p-8 border border-amber-100">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 gradient-amber rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-neutral-900">本地文档</p>
+                                    <p class="text-sm text-neutral-500">多格式支持</p>
+                                </div>
+                            </div>
+                            <div class="flex -space-x-2">
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center text-xs font-medium text-white shadow-sm shadow-amber-200/50">.md</div>
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center text-xs font-medium text-white shadow-sm shadow-amber-200/50">.pdf</div>
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center text-xs font-medium text-white shadow-sm shadow-amber-200/50">.txt</div>
+                                <div class="w-8 h-8 bg-amber-200 rounded-lg flex items-center justify-center text-xs font-bold text-amber-700">+</div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center shadow-sm shadow-amber-200/50">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div class="flex-1 bg-amber-50/80 border border-amber-100 rounded-lg px-4 py-2">
+                                    <p class="text-sm text-neutral-700">自动遍历目录结构</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center shadow-sm shadow-amber-200/50">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
+                                </div>
+                                <div class="flex-1 bg-amber-50/80 border border-amber-100 rounded-lg px-4 py-2">
+                                    <p class="text-sm text-neutral-700">逐个上传至知识库</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 gradient-amber rounded-lg flex items-center justify-center shadow-sm shadow-amber-200/50">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </div>
+                                <div class="flex-1 bg-amber-50/80 border border-amber-100 rounded-lg px-4 py-2">
+                                    <p class="text-sm text-neutral-700">自动解析与切片</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-neutral-100 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <img src="icon.png" alt="RAGFlow" class="w-6 h-6">
+                                <span class="text-sm font-medium text-neutral-700">RAGFlow 知识库</span>
+                            </div>
+                            <div class="flex items-center space-x-1 text-amber-600">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                <span class="text-sm font-medium">完成解析</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-amber-400 rounded-full opacity-20 blur-2xl"></div>
+                    <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-amber-300 rounded-full opacity-20 blur-3xl"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">核心功能</h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                    专为高效知识库构建设计，六大核心功能让文档管理化繁为简
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">批量上传</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        自动遍历指定目录及其所有子目录，递归发现并逐个上传文档到 RAGFlow 知识库，无需手动分批。支持 .md、.txt、.pdf、.docx 等多种格式。
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">自动解析</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        上传后自动触发文档切片和解析，无需手动点击"解析"按钮。可配置仅上传不解析，或上传后自动解析并监控进度。
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">实时进度监控</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        实时监控每个文档的解析进度，可配置解析进度查询间隔、首次解析等待时间，全程透明可控。
+                    </p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">元数据管理</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        支持为每个文档设置自定义元数据（作者、分类、标签、版本等），只需创建同名 .meta.json 文件即可，让知识库检索更精准。
+                    </p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">断点续传</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        自动记录每个文件的处理状态（待处理 / 已上传 / 解析中 / 完成 / 失败），中断后重新运行会自动跳过已完成的文件，仅继续处理未完成或失败的文件。
+                    </p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="group p-6 bg-gradient-to-br from-amber-50/60 to-neutral-50/40 rounded-2xl border border-amber-200/50 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-14 h-14 gradient-amber rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-amber-200 transition-shadow">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-neutral-900 mb-2">纯 API / SDK 模式</h3>
+                    <p class="text-neutral-600 leading-relaxed">
+                        无需数据库依赖，完全基于 RAGFlow API / SDK 运行，部署简单，配置即用。既可源码运行，也可下载开箱即用的桌面客户端。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section id="how-it-works" class="py-20 px-4 bg-gradient-to-b from-neutral-50 to-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">3 步快速开始</h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                    简单三步，即可搭建高效的知识库管理流程
+                </p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative">
+                    <div class="bg-white rounded-2xl p-8 border border-amber-100 shadow-lg shadow-amber-50">
+                        <div class="w-12 h-12 gradient-amber rounded-xl flex items-center justify-center text-white text-xl font-bold mb-6">1</div>
+                        <h3 class="text-xl font-semibold text-neutral-900 mb-3">安装配置</h3>
+                        <p class="text-neutral-600 leading-relaxed">
+                            下载客户端或克隆源码，完成安装与配置。桌面客户端零代码启动，源码运行支持 Python 3.13+。
+                        </p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-amber-300 to-amber-400"></div>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative">
+                    <div class="bg-white rounded-2xl p-8 border border-amber-100 shadow-lg shadow-amber-50">
+                        <div class="w-12 h-12 gradient-amber rounded-xl flex items-center justify-center text-white text-xl font-bold mb-6">2</div>
+                        <h3 class="text-xl font-semibold text-neutral-900 mb-3">获取密钥</h3>
+                        <p class="text-neutral-600 leading-relaxed">
+                            在 RAGFlow 中创建知识库，获取 API Key（用户头像 → API → 创建新密钥）。
+                        </p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-amber-300 to-amber-400"></div>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative">
+                    <div class="bg-white rounded-2xl p-8 border border-amber-100 shadow-lg shadow-amber-50">
+                        <div class="w-12 h-12 gradient-amber rounded-xl flex items-center justify-center text-white text-xl font-bold mb-6">3</div>
+                        <h3 class="text-xl font-semibold text-neutral-900 mb-3">运行工具</h3>
+                        <p class="text-neutral-600 leading-relaxed">
+                            配置文档目录、支持的文件后缀、分块方法，点击运行——工具自动遍历、上传、解析，全程进度可见。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Methods -->
+            <div class="mt-16 grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl p-8 border border-amber-200/50 shadow-sm hover:shadow-md hover:shadow-amber-100 transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 gradient-amber rounded-lg flex items-center justify-center shadow-sm shadow-amber-200/50">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-neutral-900">方式一：桌面客户端（推荐）</h4>
+                    </div>
+                    <p class="text-neutral-600 leading-relaxed mb-4">
+                        在 GitHub Releases 页面下载编译好的客户端（Windows / macOS / Linux），启动后在图形界面填写 API 地址、密钥、知识库信息，点击"运行"即可。零代码、零配置文件。
+                    </p>
+                    <a href="https://github.com/Samge0/ragflow-upload/releases" target="_blank" class="inline-flex items-center space-x-2 text-amber-600 hover:text-amber-700 font-medium">
+                        <span>前往下载</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+                <div class="bg-white rounded-2xl p-8 border border-amber-200/50 shadow-sm hover:shadow-md hover:shadow-amber-100 transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 gradient-amber rounded-lg flex items-center justify-center shadow-sm shadow-amber-200/50">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-neutral-900">方式二：源码运行</h4>
+                    </div>
+                    <p class="text-neutral-600 leading-relaxed mb-4">
+                        克隆仓库，创建 Python 3.13+ 虚拟环境，安装依赖，复制并编辑配置文件，一行命令启动：
+                    </p>
+                    <div class="bg-neutral-900 rounded-lg p-4 text-sm font-mono text-neutral-100">
+                        <span class="text-green-400">$</span> python -m ragflows.main
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parsing Methods Table -->
+    <section class="py-20 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">支持的分块方法</h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                    8 种智能分块策略，适配不同类型的文档内容
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl border border-amber-100 shadow-lg shadow-amber-50 overflow-hidden">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-amber-50 to-amber-100/50 border-b border-amber-200">
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-900">方法</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-900">说明</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-900">适用场景</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-100">
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">naive</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">简单分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">通用文档</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">general</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">通用分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">混合内容</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">paper</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">论文分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">学术论文</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">book</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">书籍分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">长篇书籍</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">laws</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">法律条文</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">法律文档</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">presentation</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">演示文稿</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">PPT 幻灯片</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">manual</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">手册分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">技术手册</td>
+                        </tr>
+                        <tr class="hover:bg-amber-50/50 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-amber-600">qa</td>
+                            <td class="px-6 py-4 text-sm text-neutral-700">问答分块</td>
+                            <td class="px-6 py-4 text-sm text-neutral-600">问答对</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Target Users Section -->
+    <section class="py-20 px-4 bg-gradient-to-b from-neutral-50 to-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">适用人群</h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                    无论您是个人用户还是企业团队，都能从中受益
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- User 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-amber-200/40 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 gradient-amber rounded-2xl flex items-center justify-center mb-4 shadow-md shadow-amber-200/60">
+                        <span class="text-3xl">📚</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-2">知识库构建者</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">
+                        需要将大量文档快速导入 RAGFlow 知识库
+                    </p>
+                </div>
+                <!-- User 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-amber-200/40 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 gradient-amber rounded-2xl flex items-center justify-center mb-4 shadow-md shadow-amber-200/60">
+                        <span class="text-3xl">🤖</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-2">AI 应用开发者</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">
+                        基于 RAGFlow 搭建 RAG 应用，需要高效的数据入库流程
+                    </p>
+                </div>
+                <!-- User 3 -->
+                <div class="bg-white rounded-2xl p-6 border border-amber-200/40 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 gradient-amber rounded-2xl flex items-center justify-center mb-4 shadow-md shadow-amber-200/60">
+                        <span class="text-3xl">🏢</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-2">企业知识管理</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">
+                        批量入库技术文档、手册、报告，构建企业知识中台
+                    </p>
+                </div>
+                <!-- User 4 -->
+                <div class="bg-white rounded-2xl p-6 border border-amber-200/40 shadow-sm hover:shadow-lg hover:shadow-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 gradient-amber rounded-2xl flex items-center justify-center mb-4 shadow-md shadow-amber-200/60">
+                        <span class="text-3xl">📝</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-2">个人效率爱好者</h3>
+                    <p class="text-neutral-600 text-sm leading-relaxed">
+                        将笔记、备忘录、收藏全量导入，打造个人第二大脑
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 px-4 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">常见问题</h2>
+                <p class="text-lg text-neutral-600">
+                    快速解答您可能关心的问题
+                </p>
+            </div>
+            <div class="space-y-4">
+                <!-- FAQ 1 -->
+                <div class="border border-neutral-200 rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-amber-50/50 transition-colors" onclick="toggleFaq(this)">
+                        <span class="font-medium text-neutral-900">支持哪些文件格式？</span>
+                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="faq-content px-6 py-4 bg-amber-50/60 border-t border-amber-100 text-neutral-600 hidden">
+                        <p>支持 .md、.txt、.pdf、.docx 等多种常见文档格式。可根据需要配置支持的文件后缀列表。</p>
+                    </div>
+                </div>
+                <!-- FAQ 2 -->
+                <div class="border border-neutral-200 rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-amber-50/50 transition-colors" onclick="toggleFaq(this)">
+                        <span class="font-medium text-neutral-900">中断后能否继续上传？</span>
+                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="faq-content px-6 py-4 bg-amber-50/60 border-t border-amber-100 text-neutral-600 hidden">
+                        <p>可以。工具会自动记录每个文件的处理状态，中断后重新运行会自动跳过已完成的文件，仅继续处理未完成或失败的文件。</p>
+                    </div>
+                </div>
+                <!-- FAQ 3 -->
+                <div class="border border-neutral-200 rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-amber-50/50 transition-colors" onclick="toggleFaq(this)">
+                        <span class="font-medium text-neutral-900">如何为文档添加元数据？</span>
+                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="faq-content px-6 py-4 bg-amber-50/60 border-t border-amber-100 text-neutral-600 hidden">
+                        <p>只需在与文档同名的 .meta.json 文件中定义元数据即可，支持作者、分类、标签、版本等自定义字段，让知识库检索更精准。</p>
+                    </div>
+                </div>
+                <!-- FAQ 4 -->
+                <div class="border border-neutral-200 rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-amber-50/50 transition-colors" onclick="toggleFaq(this)">
+                        <span class="font-medium text-neutral-900">需要什么版本的 RAGFlow？</span>
+                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="faq-content px-6 py-4 bg-amber-50/60 border-t border-amber-100 text-neutral-600 hidden">
+                        <p>适用于 RAGFlow v0.26.2+ 版本。如果使用老版本 v0.19，请使用 v1.0.6-alpha 版本的工具。</p>
+                    </div>
+                </div>
+                <!-- FAQ 5 -->
+                <div class="border border-neutral-200 rounded-xl overflow-hidden">
+                    <button class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-amber-50/50 transition-colors" onclick="toggleFaq(this)">
+                        <span class="font-medium text-neutral-900">桌面客户端支持哪些操作系统？</span>
+                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="faq-content px-6 py-4 bg-amber-50/60 border-t border-amber-100 text-neutral-600 hidden">
+                        <p>支持 Windows、macOS 和 Linux 三大主流操作系统。在 GitHub Releases 页面可下载对应平台的客户端。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-amber-50 via-amber-100/30 to-neutral-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">开始构建高效的知识库</h2>
+            <p class="text-lg text-neutral-600 mb-8 max-w-2xl mx-auto">
+                下载客户端或克隆源码，几分钟内即可开始批量上传您的文档。让 RAGFlow Upload 帮您节省宝贵时间。
+            </p>
+            <a href="https://github.com/Samge0/ragflow-upload/releases" target="_blank" class="inline-flex items-center space-x-3 gradient-amber text-white px-10 py-5 rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-amber-200 transition-all">
+                <span>立即下载</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+            <p class="mt-6 text-sm text-neutral-500">
+                MIT License 开源协议 · GitHub: <a href="https://github.com/Samge0/ragflow-upload" target="_blank" class="text-amber-600 hover:text-amber-700">Samge0/ragflow-upload</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-neutral-900 text-neutral-300 py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="icon.png" alt="RAGFlow Upload" class="w-8 h-8">
+                        <span class="text-lg font-semibold text-white">RAGFlow Upload</span>
+                    </div>
+                    <p class="text-neutral-400 text-sm leading-relaxed max-w-md">
+                        基于 RAGFlow v0.26.2+ API 的文档批量上传与自动解析工具，解放双手，告别繁琐的手动分批操作。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">相关链接</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/Samge0/ragflow-upload" target="_blank" class="hover:text-amber-400 transition-colors">GitHub 仓库</a></li>
+                        <li><a href="https://github.com/Samge0/ragflow-upload/releases" target="_blank" class="hover:text-amber-400 transition-colors">Releases 下载</a></li>
+                        <li><a href="https://ragflow.io/docs" target="_blank" class="hover:text-amber-400 transition-colors">RAGFlow 官方文档</a></li>
+                        <li><a href="https://github.com/Samge0/ragflow-upload/issues" target="_blank" class="hover:text-amber-400 transition-colors">问题反馈</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">版本信息</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>当前版本: v1.0.7+ragflow0.26.2</li>
+                        <li>适用版本: RAGFlow v0.26.2+</li>
+                        <li>开源协议: MIT License</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-500">
+                <p>&copy; 2024 RAGFlow Upload. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">Made with <span class="text-amber-500">♥</span> for efficient knowledge management</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('.faq-icon');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
